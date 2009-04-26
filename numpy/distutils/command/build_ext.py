@@ -410,6 +410,9 @@ class build_ext (old_build_ext):
             if isinstance(self.compiler, GnuCCompiler):
                 if sys.platform[:5] == 'linux':
                     export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
+                elif sys.platform == "darwin":
+                    export_map_args = ['-Wl,-exported_symbols_list', '-Wl,%s.darwin' \
+                                       % export_map_filename]
                 else:
                     export_map_args = []
                 extra_args.extend(export_map_args)
