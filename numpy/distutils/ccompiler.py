@@ -330,6 +330,9 @@ compiler_class['gnu'] = ('gnuccompiler','GnuCCompiler', "Gnu C Compiler")
 if sys.platform[:5] == 'linux':
     ccompiler._default_compilers = (('linux.*', 'gnu'),) \
                                    + ccompiler._default_compilers
+if sys.platform == 'darwin':
+    ccompiler._default_compilers = (('darwin', 'gnu'),) \
+                                   + ccompiler._default_compilers
 
 _distutils_new_compiler = new_compiler
 def new_compiler (plat=None,

@@ -229,6 +229,13 @@ class build_ext (old_build_ext):
         # Do nothing. Swig sources have beed handled in build_src command.
         return sources
 
+    def get_package_dir(self, package_name):
+        modpath = package_name.split('.')
+        package = '.'.join(modpath[0:-1])
+        base = modpath[-1]
+        build_py = self.get_finalized_command('build_py')
+        return build_py.get_package_dir(package), base
+
     def build_extension(self, ext):
         sources = ext.sources
         if sources is None or not is_sequence(sources):
@@ -243,11 +250,7 @@ class build_ext (old_build_ext):
 
         fullname = self.get_ext_fullname(ext.name)
         if self.inplace:
-            modpath = fullname.split('.')
-            package = '.'.join(modpath[0:-1])
-            base = modpath[-1]
-            build_py = self.get_finalized_command('build_py')
-            package_dir = build_py.get_package_dir(package)
+            package_dir, base = self.get_package_dir(fullname)
             ext_filename = os.path.join(package_dir,
                                         self.get_ext_filename(base))
         else:
@@ -402,14 +405,13 @@ class build_ext (old_build_ext):
 
         # XXX: put this in separate function
         if ext.export_map:
-            modpath = fullname.split('.')
-            package = '.'.join(modpath[0:-1])
-            base = modpath[-1]
-            build_py = self.get_finalized_command('build_py')
-            package_dir = build_py.get_package_dir(package)
+            package_dir = self.get_package_dir(fullname)[0]
             export_map_filename = os.path.join(package_dir, ext.export_map)
-            if isinstance(self.compiler, GnuCCompiler) and sys.platform[:5] == 'linux':
-                export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
+            if isinstance(self.compiler, GnuCCompiler):
+                if sys.platform[:5] == 'linux':
+                    export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
+                else:
+                    export_map_args = []
                 extra_args.extend(export_map_args)
 
         linker(objects, ext_filename,
