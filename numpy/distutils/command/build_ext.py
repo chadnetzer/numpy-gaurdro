@@ -403,19 +403,7 @@ class build_ext (old_build_ext):
         else:
             kws = {}
 
-        # XXX: put this in separate function
-        if ext.export_map:
-            package_dir = self.get_package_dir(fullname)[0]
-            export_map_filename = os.path.join(package_dir, ext.export_map)
-            if isinstance(self.compiler, GnuCCompiler):
-                if sys.platform[:5] == 'linux':
-                    export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
-                elif sys.platform == "darwin":
-                    export_map_args = ['-Wl,-exported_symbols_list', '-Wl,%s.darwin' \
-                                       % export_map_filename]
-                else:
-                    export_map_args = []
-                extra_args.extend(export_map_args)
+        extra_args.extend(self._export_map_args(ext))
 
         linker(objects, ext_filename,
                libraries=libraries,
@@ -425,6 +413,21 @@ class build_ext (old_build_ext):
                export_symbols=self.get_export_symbols(ext),
                debug=self.debug,
                build_temp=self.build_temp,**kws)
+
+    def _export_map_args(self, ext):
+        fullname = self.get_ext_fullname(ext.name)
+        export_map_args = []
+        if ext.export_map:
+            package_dir = self.get_package_dir(fullname)[0]
+            export_map_filename = os.path.join(package_dir, ext.export_map)
+            if isinstance(self.compiler, GnuCCompiler):
+                if sys.platform[:5] == 'linux':
+                    export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
+                elif sys.platform == "darwin":
+                    export_map_args = ['-Wl,-exported_symbols_list', '-Wl,%s.darwin' \
+                                       % export_map_filename]
+
+        return export_map_args
 
     def _add_dummy_mingwex_sym(self, c_sources):
         build_src = self.get_finalized_command("build_src").build_src
