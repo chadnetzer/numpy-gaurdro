@@ -31,6 +31,7 @@ class Extension(old_Extension):
                   language=None,
                   f2py_options=None,
                   module_dirs=None,
+                  export_map=None,
                  ):
         old_Extension.__init__(self,name, [],
                                include_dirs,
@@ -56,7 +57,7 @@ class Extension(old_Extension):
         # numpy_distutils features
         self.f2py_options = f2py_options or []
         self.module_dirs = module_dirs or []
-
+        self.export_map = export_map
         return
 
     def has_cxx_sources(self):

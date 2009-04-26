@@ -311,6 +311,7 @@ compiler_class['intel'] = ('intelccompiler','IntelCCompiler',
                            "Intel C Compiler for 32-bit applications")
 compiler_class['intele'] = ('intelccompiler','IntelItaniumCCompiler',
                            "Intel C Itanium Compiler for Itanium-based applications")
+
 ccompiler._default_compilers += (('linux.*','intel'),('linux.*','intele'))
 
 if sys.platform == 'win32':
@@ -324,6 +325,11 @@ if sys.platform == 'win32':
         ccompiler._default_compilers = (('nt', 'mingw32'),) \
                                        + ccompiler._default_compilers
 
+compiler_class['gnu'] = ('gnuccompiler','GnuCCompiler', "Gnu C Compiler")
+
+if sys.platform[:5] == 'linux':
+    ccompiler._default_compilers = (('linux.*', 'gnu'),) \
+                                   + ccompiler._default_compilers
 
 _distutils_new_compiler = new_compiler
 def new_compiler (plat=None,

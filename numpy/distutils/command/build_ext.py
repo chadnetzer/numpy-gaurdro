@@ -19,6 +19,7 @@ from numpy.distutils.misc_util import filter_sources, has_f_sources, \
      get_numpy_include_dirs, is_sequence, get_build_architecture, \
      msvc_version
 from numpy.distutils.command.config_compiler import show_fortran_compilers
+from numpy.distutils.gnuccompiler import GnuCCompiler
 
 try:
     set
@@ -398,6 +399,18 @@ class build_ext (old_build_ext):
             kws = {'target_lang':ext.language}
         else:
             kws = {}
+
+        # XXX: put this in separate function
+        if ext.export_map:
+            modpath = fullname.split('.')
+            package = '.'.join(modpath[0:-1])
+            base = modpath[-1]
+            build_py = self.get_finalized_command('build_py')
+            package_dir = build_py.get_package_dir(package)
+            export_map_filename = os.path.join(package_dir, ext.export_map)
+            if isinstance(self.compiler, GnuCCompiler) and sys.platform[:5] == 'linux':
+                export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
+                extra_args.extend(export_map_args)
 
         linker(objects, ext_filename,
                libraries=libraries,
