@@ -547,8 +547,8 @@ def configuration(parent_package='',top_path=None):
             'include/numpy/fenv/fenv.h',
             join(codegen_dir,'genapi.py'),
             join(codegen_dir,'*.txt'),
-            'src/multiarray/Symbols.linux',
-            'src/umath/Symbols.linux',
+            'src/multiarray/exports.txt',
+            'src/umath/exports.txt',
             ]
 
     # Don't install fenv unless we need them.
@@ -655,7 +655,7 @@ def configuration(parent_package='',top_path=None):
                                  join('*.py')],
                          depends = deps + multiarray_deps,
                          libraries=['npymath'],
-                         export_map='src/multiarray/Symbols')
+                         export_map='src/multiarray/exports.txt')
 
     config.add_extension('umath',
                          sources = [generate_config_h,
@@ -665,7 +665,7 @@ def configuration(parent_package='',top_path=None):
                                     ] + umath_src,
                          depends = deps + umath_deps,
                          libraries=['npymath'],
-                         export_map='src/umath/Symbols',
+                         export_map='src/umath/exports.txt',
                          )
 
     config.add_extension('scalarmath',
