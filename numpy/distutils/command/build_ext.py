@@ -20,6 +20,7 @@ from numpy.distutils.misc_util import filter_sources, has_f_sources, \
      msvc_version
 from numpy.distutils.command.config_compiler import show_fortran_compilers
 from numpy.distutils.gnuccompiler import GnuCCompiler
+from numpy.distutils.export_map import generate_export_map
 
 try:
     set
@@ -417,16 +418,37 @@ class build_ext (old_build_ext):
     def _export_map_args(self, ext):
         fullname = self.get_ext_fullname(ext.name)
         export_map_args = []
+
         if ext.export_map:
             package_dir = self.get_package_dir(fullname)[0]
-            export_map_filename = os.path.join(package_dir, ext.export_map)
-            if isinstance(self.compiler, GnuCCompiler):
-                if sys.platform[:5] == 'linux':
-                    export_map_args = ['-Wl,--version-script=%s.linux' % export_map_filename]
-                elif sys.platform == "darwin":
-                    export_map_args = ['-Wl,-exported_symbols_list', '-Wl,%s.darwin' \
-                                       % export_map_filename]
+            export_map_target = os.path.join(self.build_temp, package_dir,
+                    os.path.splitext(ext.export_map)[0])
+            export_map_source = os.path.join(package_dir, ext.export_map)
+            extname = fullname.split('.')[-1]
+            try:
+                export_map = generate_export_map(
+                        export_map_source, extname, sys.platform,
+                        export_map_target, self.debug)
+                if isinstance(self.compiler, GnuCCompiler):
+                    if sys.platform[:5] == 'linux':
+                        export_map_args = ['-Wl,--version-script=%s' \
+                                           % export_map]
+                    elif sys.platform == "darwin":
+                        export_map_args = ['-Wl,-exported_symbols_list', 
+                                           '-Wl,%s' % export_map]
+                    else:
+                        log.debug("Don't know how to handle export map " 
+                                  "on platform %s with gnu toolchain, "
+                                  "export_map ignored" % sys.platform)
+                else:
+                    log.debug("Don't know how to handle export map " 
+                              "on platform %s with non gnu toolchain, "
+                              "export_map ignored" % sys.platform)
 
+            except ValueError:
+                log.debug("Don't know how to handle export map " 
+                          "on platform %s, export_map ignored" %
+                          sys.platform)
         return export_map_args
 
     def _add_dummy_mingwex_sym(self, c_sources):
