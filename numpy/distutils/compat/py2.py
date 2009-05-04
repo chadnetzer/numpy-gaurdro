@@ -109,3 +109,20 @@ def caught_process_str(func, allstr, sourcefile):
         code = func(allstr)
     except ValueError, e:
         raise ValueError('"%s", %s' % (sourcefile, e))
+
+def try_initialize_compiler(func, instance):
+    try:
+        func()
+    except DistutilsPlatformError, e:
+        if not instance._bypass_distutils_cc:
+            raise e
+        else:
+            instance.scons_compiler = compiler_type
+
+def try_import_numscons():
+    try:
+        import numscons
+    except ImportError, e:
+        raise RuntimeError("importing numscons failed (error was %s), using " \
+                           "scons within distutils is not possible without "
+                           "this package " % str(e))

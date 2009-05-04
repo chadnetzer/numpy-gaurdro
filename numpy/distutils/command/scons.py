@@ -12,6 +12,8 @@ from numpy.distutils.exec_command import find_executable
 from numpy.distutils import log
 from numpy.distutils.misc_util import is_bootstrapping
 
+from numpy.distutils.compat import try_initialize_compiler, try_import_numscons
+
 def get_scons_build_dir():
     """Return the top path where everything produced by scons will be put.
 
@@ -298,7 +300,7 @@ class scons(old_build_ext):
             if compiler_type == 'msvc':
                 self._bypass_distutils_cc = True
             from numpy.distutils.ccompiler import new_compiler
-            try:
+            def init_compiler():
                 distutils_compiler = new_compiler(compiler=compiler_type,
                                           verbose=self.verbose,
                                           dry_run=self.dry_run,
@@ -309,11 +311,7 @@ class scons(old_build_ext):
                     distutils_compiler.initialize()
                 self.scons_compiler = dist2sconscc(distutils_compiler)
                 self.scons_compiler_path = protect_path(get_tool_path(distutils_compiler))
-            except DistutilsPlatformError, e:
-                if not self._bypass_distutils_cc:
-                    raise e
-                else:
-                    self.scons_compiler = compiler_type
+            try_initialize_compiler(init_compiler, self)
 
             # We do the same for the fortran compiler ...
             fcompiler_type = self.fcompiler
@@ -344,12 +342,6 @@ class scons(old_build_ext):
 
     def run(self):
         if len(self.sconscripts) > 0:
-            try:
-                import numscons
-            except ImportError, e:
-                raise RuntimeError("importing numscons failed (error was %s), using " \
-                                   "scons within distutils is not possible without "
-                                   "this package " % str(e))
 
             try:
                 minver = "0.9.3"
@@ -373,7 +365,6 @@ class scons(old_build_ext):
             # nothing to do, just leave it here.
             return
 
-        print "is bootstrapping ? %s" % is_bootstrapping()
         # XXX: when a scons script is missing, scons only prints warnings, and
         # does not return a failure (status is 0). We have to detect this from
         # distutils (this cannot work for recursive scons builds...)
