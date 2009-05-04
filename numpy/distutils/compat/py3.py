@@ -86,3 +86,26 @@ def caught_numerix_info(which):
                 loginfo(msg2)
                 loginfo(msg3)
     return which
+
+def caught_replace(match, env, line):
+    name = match.group(1)
+    try :
+        val = env[name]
+    except KeyError as e :
+        msg = 'line %d: %s'%(line, e)
+        raise ValueError(msg)
+    return val
+
+def caught_parse_loop_header(head, newline):
+    try :
+        envlist = parse_loop_header(head)
+    except ValueError as e :
+        msg = "line %d: %s" % (newline, e)
+        raise ValueError(msg)
+    return envlist
+
+def caught_process_str(func, allstr, sourcefile):
+    try:
+        code = func(allstr)
+    except ValueError as e:
+        raise ValueError('"%s", %s' % (sourcefile, e))

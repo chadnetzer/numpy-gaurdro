@@ -76,6 +76,8 @@ import os
 import sys
 import re
 
+from numpy.distutils.compat import caught_replace, caught_parse_loop_header, caught_process_str
+
 # names for replacement that are already global.
 global_names = {}
 
@@ -188,13 +190,7 @@ def parse_string(astr, env, level, line) :
 
     # local function for string replacement, uses env
     def replace(match):
-        name = match.group(1)
-        try :
-            val = env[name]
-        except KeyError, e :
-            msg = 'line %d: %s'%(line, e)
-            raise ValueError(msg)
-        return val
+        return caught_replace(match)
 
     code = [lineno]
     struct = parse_structure(astr, level)
@@ -209,11 +205,7 @@ def parse_string(astr, env, level, line) :
             oldend = sub[3]
             newline = line + sub[4]
             code.append(replace_re.sub(replace, pref))
-            try :
-                envlist = parse_loop_header(head)
-            except ValueError, e :
-                msg = "line %d: %s" % (newline, e)
-                raise ValueError(msg)
+            envlist = caught_parse_loop_header(head, newline)
             for newenv in envlist :
                 newenv.update(env)
                 newcode = parse_string(text, newenv, newlevel, newline)
@@ -246,7 +238,7 @@ def resolve_includes(source):
             if not os.path.isabs(fn):
                 fn = os.path.join(d,fn)
             if os.path.isfile(fn):
-                print 'Including file',fn
+                print('Including file',fn)
                 lines.extend(resolve_includes(fn))
             else:
                 lines.append(line)
@@ -258,10 +250,7 @@ def resolve_includes(source):
 def process_file(source):
     lines = resolve_includes(source)
     sourcefile = os.path.normcase(source).replace("\\","\\\\")
-    try:
-        code = process_str(''.join(lines))
-    except ValueError, e:
-        raise ValueError('"%s", %s' % (sourcefile, e))
+    code = caught_process_str(process_str, ''.join(lines), sourcefile)
     return '#line 1 "%s"\n%s' % (sourcefile, code)
 
 
@@ -296,8 +285,5 @@ if __name__ == "__main__":
         outfile = open(newname,'w')
 
     allstr = fid.read()
-    try:
-        writestr = process_str(allstr)
-    except ValueError, e:
-        raise ValueError("file %s, %s" % (file, e))
+    writestr = caught_process_str(process_str, allstr, file)
     outfile.write(writestr)
