@@ -11,10 +11,10 @@ Support code for building Python extensions on Windows.
 import os
 import subprocess
 import sys
-import log
 import subprocess
 import re
 
+import numpy.distutils.log
 # Overwrite certain distutils.ccompiler functions:
 import numpy.distutils.ccompiler
 
@@ -192,9 +192,8 @@ class Mingw32CCompiler(distutils.cygwinccompiler.CygwinCCompiler):
                 base = base[1:]
 
             if ext not in (self.src_extensions + ['.rc','.res']):
-                raise UnknownFileError, \
-                      "unknown file type '%s' (from '%s')" % \
-                      (ext, src_name)
+                raise UnknownFileError("unknown file type '%s' (from '%s')" % \
+                      (ext, src_name))
             if strip_dir:
                 base = os.path.basename (base)
             if ext == '.res' or ext == '.rc':
@@ -212,7 +211,7 @@ class Mingw32CCompiler(distutils.cygwinccompiler.CygwinCCompiler):
 def find_python_dll():
     maj, min, micro = [int(i) for i in sys.version_info[:3]]
     dllname = 'python%d%d.dll' % (maj, min)
-    print "Looking for %s" % dllname
+    print("Looking for %s" % dllname)
 
     # We can't do much here:
     # - find it in python main dir
@@ -433,10 +432,9 @@ def check_embedded_msvcr_match_linked(msver):
     if msvcv:
         maj = int(msvcv[5:6])
         if not maj == int(msver):
-            raise ValueError, \
-                  "Discrepancy between linked msvcr " \
+            raise ValueError("Discrepancy between linked msvcr " \
                   "(%d) and the one about to be embedded " \
-                  "(%d)" % (int(msver), maj)
+                  "(%d)" % (int(msver), maj))
 
 def configtest_name(config):
     base = os.path.basename(config._gen_temp_sourcefile("yo", [], "c"))
