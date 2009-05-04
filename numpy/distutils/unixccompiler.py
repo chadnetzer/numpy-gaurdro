@@ -7,17 +7,15 @@ import os
 from distutils.errors import DistutilsExecError, CompileError
 from distutils.unixccompiler import *
 from numpy.distutils.ccompiler import replace_method
+from numpy.distutils.compat import caught_raise_spawn_command
 
-import log
+from numpy.distutils import log
 
 # Note that UnixCCompiler._compile appeared in Python 2.3
 def UnixCCompiler__compile(self, obj, src, ext, cc_args, extra_postargs, pp_opts):
     display = '%s: %s' % (os.path.basename(self.compiler_so[0]),src)
-    try:
-        self.spawn(self.compiler_so + cc_args + [src, '-o', obj] +
-                   extra_postargs, display = display)
-    except DistutilsExecError, msg:
-        raise CompileError, msg
+    caught_raise_spawn_command(self.spawn, self.compiler_so + cc_args + [src, '-o', obj] +
+                   extra_postargs, display, CompileError)
 
 replace_method(UnixCCompiler, '_compile', UnixCCompiler__compile)
 
@@ -56,11 +54,8 @@ def UnixCCompiler_create_static_lib(self, objects, output_libname,
         if self.ranlib:
             display = '%s:@ %s' % (os.path.basename(self.ranlib[0]),
                                    output_filename)
-            try:
-                self.spawn(self.ranlib + [output_filename],
-                           display = display)
-            except DistutilsExecError, msg:
-                raise LibError, msg
+            caught_raise_spawn_command(self.spawn,
+                 self.ranlib + [output_filename], display, LibError)
     else:
         log.debug("skipping %s (up-to-date)", output_filename)
     return
