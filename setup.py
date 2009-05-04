@@ -59,7 +59,7 @@ def svn_version():
     try:
         out = subprocess.Popen(['svn', 'info'], stdout = subprocess.PIPE).communicate()[0]
     except OSError:
-        print " --- Could not run svn info --- "
+        print(" --- Could not run svn info --- ")
         return ""
 
     r = re.compile('Revision: ([0-9]+)')
