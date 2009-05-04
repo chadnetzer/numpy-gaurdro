@@ -17,6 +17,8 @@ from numpy.distutils.exec_command import exec_command
 from numpy.distutils.mingw32ccompiler import generate_manifest
 from numpy.distutils.command.autodist import check_inline, check_compiler_gcc4
 
+from numpy.distutils.compat import initialize_compiler, caught_wrap_method
+
 LANG_EXT['f77'] = '.f'
 LANG_EXT['f90'] = '.f90'
 
@@ -51,21 +53,7 @@ class config(old_config):
             # catch it here, hoping it is early enough, and print an helpful
             # message instead of Error: None.
             if not self.compiler.initialized:
-                try:
-                    self.compiler.initialize()
-                except IOError, e:
-                    msg = """\
-Could not initialize compiler instance: do you have Visual Studio
-installed ? If you are trying to build with mingw, please use python setup.py
-build -c mingw32 instead ). If you have Visual Studio installed, check it is
-correctly installed, and the right version (VS 2008 for python 2.6, VS 2003 for
-2.5, etc...). Original exception was: %s, and the Compiler
-class was %s
-============================================================================""" \
-                        % (e, self.compiler.__class__.__name__)
-                    print """\
-============================================================================"""
-                    raise distutils.errors.DistutilsPlatformError(msg)
+                initialize_compiler(self)
 
         if not isinstance(self.fcompiler, FCompiler):
             self.fcompiler = new_fcompiler(compiler=self.fcompiler,
@@ -83,11 +71,7 @@ class was %s
         save_compiler = self.compiler
         if lang in ['f77','f90']:
             self.compiler = self.fcompiler
-        try:
-            ret = mth(*((self,)+args))
-        except (DistutilsExecError,CompileError),msg:
-            self.compiler = save_compiler
-            raise CompileError
+        ret = caught_wrap_method(mth, self, args, save_compiler)
         self.compiler = save_compiler
         return ret
 
