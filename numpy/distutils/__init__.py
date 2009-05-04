@@ -1,15 +1,15 @@
 
-from __version__ import version as __version__
+from numpy.distutils.__version__ import version as __version__
 
 # Must import local ccompiler ASAP in order to get
 # customized CCompiler.spawn effective.
-import ccompiler
-import unixccompiler
+import numpy.distutils.ccompiler
+import numpy.distutils.unixccompiler
 
-from info import __doc__
+from numpy.distutils.info import __doc__
 
 try:
-    import __config__
+    import numpy.distutils.__config__
     _INSTALLED = True
 except ImportError:
     _INSTALLED = False
