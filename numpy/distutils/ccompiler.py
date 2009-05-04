@@ -1,7 +1,7 @@
 import re
 import os
 import sys
-import new
+import types
 
 from distutils.ccompiler import *
 from distutils import ccompiler
@@ -11,6 +11,7 @@ from distutils.version import LooseVersion
 from numpy.distutils import log
 from numpy.distutils.exec_command import exec_command
 from numpy.distutils.misc_util import cyg2win32, is_sequence, mingw32, quote_args, msvc_on_amd64
+from numpy.distutils.compat import try_import_compiler
 
 # hack to set compiler optimizing options. Needs to integrated with something.
 import distutils.sysconfig
@@ -21,7 +22,11 @@ def _new_init_posix():
 #distutils.sysconfig._init_posix = _new_init_posix
 
 def replace_method(klass, method_name, func):
-    m = new.instancemethod(func, None, klass)
+    if sys.version_info[0] < 3:
+        m = types.MethodType(func, None, klass)
+    else:
+        # Py3k does not have unbound method anymore, MethodType does not work
+        m = lambda self, *args, **kw: func(self, *args, **kw)
     setattr(klass, method_name, m)
 
 # Using customized CCompiler.spawn.
@@ -342,17 +347,7 @@ def new_compiler (plat=None,
             msg = msg + " with '%s' compiler" % compiler
         raise DistutilsPlatformError(msg)
     module_name = "numpy.distutils." + module_name
-    try:
-        __import__ (module_name)
-    except ImportError, msg:
-        log.info('%s in numpy.distutils; trying from distutils',
-                 str(msg))
-        module_name = module_name[6:]
-        try:
-            __import__(module_name)
-        except ImportError, msg:
-            raise DistutilsModuleError("can't compile C/C++ code: unable to load module '%s'" % \
-                  module_name)
+    module_name = try_import_compiler(module_name)
     try:
         module = sys.modules[module_name]
         klass = vars(module)[class_name]
