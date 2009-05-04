@@ -68,3 +68,21 @@ def caught_wrap_method(method, instance, args, save_compiler):
         instance.compiler = save_compiler
         raise CompileError
     return ret
+
+def caught_numerix_info(which):
+    try:
+        import numpy
+        which = "numpy", "defaulted"
+    except ImportError as msg1:
+        try:
+            import Numeric
+            which = "numeric", "defaulted"
+        except ImportError as msg2:
+            try:
+                import numarray
+                which = "numarray", "defaulted"
+            except ImportError as msg3:
+                loginfo(msg1)
+                loginfo(msg2)
+                loginfo(msg3)
+    return which

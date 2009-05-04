@@ -116,7 +116,11 @@ import re
 import copy
 import warnings
 from glob import glob
-import ConfigParser
+
+if sys.version_info[0] < 3:
+    import ConfigParser
+else:
+    import configparser as ConfigParser
 
 from distutils.errors import DistutilsError
 from distutils.dist import Distribution
@@ -127,6 +131,8 @@ from numpy.distutils.exec_command import \
     find_executable, exec_command, get_pythonexe
 from numpy.distutils.misc_util import is_sequence, is_string
 from numpy.distutils.command.config import config as cmd_config
+
+from numpy.distutils.compat import caught_numerix_info
 
 # Determine number of bits
 import platform
@@ -1593,21 +1599,7 @@ class numerix_info(system_info):
         # If all the above fail, default to numpy.
         if which[0] is None:
             which = "numpy", "defaulted"
-            try:
-                import numpy
-                which = "numpy", "defaulted"
-            except ImportError,msg1:
-                try:
-                    import Numeric
-                    which = "numeric", "defaulted"
-                except ImportError,msg2:
-                    try:
-                        import numarray
-                        which = "numarray", "defaulted"
-                    except ImportError,msg3:
-                        log.info(msg1)
-                        log.info(msg2)
-                        log.info(msg3)
+            which = caught_numerix_info(which)
         which = which[0].strip().lower(), which[1]
         if which[0] not in ["numeric", "numarray", "numpy"]:
             raise ValueError("numerix selector must be either 'Numeric' "
