@@ -190,7 +190,7 @@ def parse_string(astr, env, level, line) :
 
     # local function for string replacement, uses env
     def replace(match):
-        return caught_replace(match)
+        return caught_replace(match, env, line)
 
     code = [lineno]
     struct = parse_structure(astr, level)
@@ -205,7 +205,7 @@ def parse_string(astr, env, level, line) :
             oldend = sub[3]
             newline = line + sub[4]
             code.append(replace_re.sub(replace, pref))
-            envlist = caught_parse_loop_header(head, newline)
+            envlist = caught_parse_loop_header(parse_loop_header, head, newline)
             for newenv in envlist :
                 newenv.update(env)
                 newcode = parse_string(text, newenv, newlevel, newline)

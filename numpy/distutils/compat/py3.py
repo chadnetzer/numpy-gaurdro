@@ -96,9 +96,9 @@ def caught_replace(match, env, line):
         raise ValueError(msg)
     return val
 
-def caught_parse_loop_header(head, newline):
+def caught_parse_loop_header(func, head, newline):
     try :
-        envlist = parse_loop_header(head)
+        envlist = func(head)
     except ValueError as e :
         msg = "line %d: %s" % (newline, e)
         raise ValueError(msg)
@@ -109,6 +109,7 @@ def caught_process_str(func, allstr, sourcefile):
         code = func(allstr)
     except ValueError as e:
         raise ValueError('"%s", %s' % (sourcefile, e))
+    return code
 
 def try_initialize_compiler(func, instance):
     try:
@@ -126,3 +127,12 @@ def try_import_numscons():
         raise RuntimeError("importing numscons failed (error was %s), using " \
                            "scons within distutils is not possible without "
                            "this package " % str(e))
+
+def caught_fcompiler_version(func, compiler):
+    try:
+        c, v = func()
+    except (DistutilsModuleError, CompilerNotFound) as e:
+        logdebug("show_fcompilers: %s not found" % (compiler,))
+        logdebug(repr(e))
+
+    return c, v
