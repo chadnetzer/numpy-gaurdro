@@ -82,7 +82,7 @@ def CCompiler_compile(self, sources, output_dir=None, macros=None,
     # method to support pre Python 2.3 distutils.
     if not sources:
         return []
-    from fcompiler import FCompiler
+    from numpy.distutils.fcompiler import FCompiler
     if isinstance(self, FCompiler):
         display = []
         for fc in ['f77','f90','fix']:
