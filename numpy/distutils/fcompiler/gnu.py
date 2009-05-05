@@ -186,12 +186,13 @@ class GnuFCompiler(FCompiler):
         return ['-g']
 
     def get_flags_opt(self):
-        if self.get_version()<='3.3.3':
-            # With this compiler version building Fortran BLAS/LAPACK
-            # with -O3 caused failures in lib.lapack heevr,syevr tests.
-            opt = ['-O2']
-        else:
-            opt = ['-O3']
+        opt = []
+        #if self.get_version()<='3.3.3':
+        #    # With this compiler version building Fortran BLAS/LAPACK
+        #    # with -O3 caused failures in lib.lapack heevr,syevr tests.
+        #    opt = ['-O2']
+        #else:
+        #    opt = ['-O3']
         opt.append('-funroll-loops')
         return opt
 
