@@ -19,7 +19,7 @@ import os
 import warnings
 import platform
 
-from numpy.distutils.compat import getoutput
+from numpy.distutils.compat import getoutput, open_cpuinfo
 
 def command_info(successful_status=(0,), stacklevel=1, **kw):
     info = {}
