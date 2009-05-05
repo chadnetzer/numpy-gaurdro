@@ -661,7 +661,7 @@ def make_arrays(funcdict):
     #
     code1list = []
     code2list = []
-    names = funcdict.keys()
+    names = list(funcdict.keys())
     names.sort()
     for name in names:
         uf = funcdict[name]
@@ -720,7 +720,7 @@ def make_arrays(funcdict):
 
 def make_ufuncs(funcdict):
     code3list = []
-    names = funcdict.keys()
+    names = list(funcdict.keys())
     names.sort()
     for name in names:
         uf = funcdict[name]
