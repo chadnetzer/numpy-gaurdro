@@ -4,10 +4,10 @@ if sys.version_info[0] < 3:
         caught_spawn_command, caught_raise_spawn_command, caught_wrap_method, initialize_compiler, \
         caught_numerix_info, caught_replace, caught_parse_loop_header, caught_process_str, \
         try_initialize_compiler, try_import_numscons, caught_fcompiler_version, getoutput, \
-        open_cpuinfo, get_ar_exe
+        open_cpuinfo, get_ar_exe, print_fcompiler_version
 else:
     from numpy.distutils.compat.py3 import try_import_compiler, try_load_module, \
         caught_spawn_command, caught_raise_spawn_command, caught_wrap_method, initialize_compiler, \
         caught_numerix_info, caught_replace, caught_parse_loop_header, caught_process_str, \
         try_initialize_compiler, try_import_numscons, caught_fcompiler_version, getoutput, \
-        open_cpuinfo, get_ar_exe
+        open_cpuinfo, get_ar_exe, print_fcompiler_version

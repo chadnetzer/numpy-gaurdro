@@ -7,6 +7,7 @@ from numpy.distutils.cpuinfo import cpu
 from numpy.distutils.fcompiler import FCompiler
 from numpy.distutils.exec_command import exec_command
 from numpy.distutils.misc_util import msvc_runtime_library
+from numpy.distutils.compat import print_fcompiler_version
 
 compilers = ['GnuFCompiler', 'Gnu95FCompiler']
 
@@ -323,10 +324,5 @@ if __name__ == '__main__':
     compiler.customize()
     print(compiler.get_version())
     raw_input('Press ENTER to continue...')
-    try:
-        compiler = Gnu95FCompiler()
-        compiler.customize()
-        print(compiler.get_version())
-    except Exception, msg:
-        print(msg)
+    print_fcompiler_version(Gnu95FCompiler)
     raw_input('Press ENTER to continue...')

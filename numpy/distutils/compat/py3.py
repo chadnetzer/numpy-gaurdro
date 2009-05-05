@@ -190,3 +190,11 @@ def get_ar_exe(klass):
             raise e
 
     return ar_exe
+
+def print_fcompiler_version(klass):
+    try:
+        compiler = klass()
+        compiler.customize()
+        print((compiler.get_version()))
+    except Exception as msg:
+        print(msg)
