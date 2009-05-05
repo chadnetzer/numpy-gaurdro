@@ -37,7 +37,7 @@ from numpy.distutils.misc_util import is_string, all_strings, is_sequence, make_
 from numpy.distutils.environment import EnvironmentConfig
 from numpy.distutils.exec_command import find_executable
 
-from numpy.distutils.compat import caught_spawn_command
+from numpy.distutils.compat import caught_raise_spawn_command
 
 __metaclass__ = type
 
@@ -647,7 +647,7 @@ class FCompiler(CCompiler):
             else:
                 linker = self.linker_so[:]
             command = linker + ld_args
-            caught_spawn_command(self.spawn, command, "", LinkError)
+            caught_raise_spawn_command(self.spawn, command, "", LinkError)
         else:
             log.debug("skipping %s (up-to-date)", output_filename)
 
