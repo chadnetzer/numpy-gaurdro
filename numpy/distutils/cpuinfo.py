@@ -16,7 +16,6 @@ __all__ = ['cpu']
 
 import sys, re, types
 import os
-import commands
 import warnings
 import platform
 
@@ -488,7 +487,7 @@ class Win32CPUInfo(CPUInfoBase):
                                     info[-1]["Model"]=int(srch.group("MDL"))
                                     info[-1]["Stepping"]=int(srch.group("STP"))
         except:
-            print sys.exc_value,'(ignoring)'
+            print(sys.exc_value,'(ignoring)')
         self.__class__.info = info
 
     def _not_impl(self): pass
@@ -645,13 +644,13 @@ if __name__ == "__main__":
     cpu.is_Intel()
     cpu.is_Alpha()
 
-    print 'CPU information:',
+    print('CPU information:', end=' ')
     for name in dir(cpuinfo):
         if name[0]=='_' and name[1]!='_':
             r = getattr(cpu,name[1:])()
             if r:
                 if r!=1:
-                    print '%s=%s' %(name[1:],r),
+                    print('%s=%s' %(name[1:],r), end=' ')
                 else:
-                    print name[1:],
-    print
+                    print(name[1:], end=' ')
+    print()
