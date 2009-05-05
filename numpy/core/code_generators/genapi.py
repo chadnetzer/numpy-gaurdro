@@ -8,10 +8,10 @@ specified.
 import sys, os, re
 import textwrap
 
-if sys.version_info[0] < 3:
-    import md5
-else:
-    from hashlib import md5
+try:
+    from hashlib import md5 as md5new
+except ImportError:
+    from md5 import new as md5new
 
 from os.path import join
 
@@ -98,7 +98,7 @@ class Function(object):
         return '\n'.join(lines)
 
     def api_hash(self):
-        m = md5.new()
+        m = md5new()
         m.update(remove_whitespace(self.return_type))
         m.update('\000')
         m.update(self.name)
@@ -307,7 +307,7 @@ def main():
     tagname = sys.argv[1]
     order_file = sys.argv[2]
     functions = get_api_functions(tagname, order_file)
-    m = md5.new(tagname)
+    m = md5new(tagname)
     for func in functions:
         print(func)
         ah = func.api_hash()
