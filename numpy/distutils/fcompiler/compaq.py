@@ -5,6 +5,7 @@ import os
 import sys
 
 from numpy.distutils.fcompiler import FCompiler
+from numpy.distutils.compat import get_ar_exe
 from distutils.errors import DistutilsPlatformError
 
 compilers = ['CompaqFCompiler']
@@ -73,26 +74,7 @@ class CompaqVisualFCompiler(FCompiler):
 
     if sys.platform=='win32':
         from distutils.msvccompiler import MSVCCompiler
-
-        try:
-            m = MSVCCompiler()
-            m.initialize()
-            ar_exe = m.lib
-        except DistutilsPlatformError, msg:
-                        pass
-        except AttributeError, msg:
-            if '_MSVCCompiler__root' in str(msg):
-                print('Ignoring "%s" (I think it is msvccompiler.py bug)' % (msg))
-            else:
-                raise
-        except IOError, e:
-            if not "vcvarsall.bat" in str(e):
-                print("Unexpected IOError in", __file__)
-                raise e
-        except ValueError, e:
-            if not "path']" in str(e):
-                print("Unexpected ValueError in", __file__)
-                raise e
+        ar_exe = get_ar_exe(MSVCCompiler)
 
     executables = {
         'version_cmd'  : ['<F90>', "/what"],

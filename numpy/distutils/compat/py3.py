@@ -1,6 +1,8 @@
 import imp
 import sys
 import warnings
+import subprocess
+import os
 
 from distutils.errors import DistutilsExecError, CompileError
 
@@ -165,3 +167,26 @@ def open_cpuinfo(info):
         fo.close()
 
     return info
+
+def get_ar_exe(klass):
+    try:
+        m = klass()
+        m.initialize()
+        ar_exe = m.lib
+    except DistutilsPlatformError as msg:
+        pass
+    except AttributeError as msg:
+        if '_MSVCCompiler__root' in str(msg):
+            print(('Ignoring "%s" (I think it is msvccompiler.py bug)' % (msg)))
+        else:
+            raise
+    except IOError as e:
+        if not "vcvarsall.bat" in str(e):
+            print(("Unexpected IOError in", __file__))
+            raise e
+    except ValueError as e:
+        if not "path']" in str(e):
+            print(("Unexpected ValueError in", __file__))
+            raise e
+
+    return ar_exe
