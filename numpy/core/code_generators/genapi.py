@@ -6,8 +6,12 @@ See ``find_function`` for how functions should be formatted, and
 specified.
 """
 import sys, os, re
-import md5
 import textwrap
+
+if sys.version_info[0] < 3:
+    import md5
+else:
+    from hashlib import md5
 
 from os.path import join
 
@@ -58,7 +62,7 @@ class Function(object):
         self.args = args
         self.doc = doc
 
-    def _format_arg(self, (typename, name)):
+    def _format_arg(self, typename, name):
         if typename.endswith('*'):
             return typename + name
         else:
@@ -71,7 +75,7 @@ class Function(object):
         return argstr
 
     def __str__(self):
-        argstr = ', '.join([self._format_arg(a) for a in self.args])
+        argstr = ', '.join([self._format_arg(*a) for a in self.args])
         if self.doc:
             doccomment = '/* %s */\n' % self.doc
         else:
@@ -80,7 +84,7 @@ class Function(object):
 
     def to_ReST(self):
         lines = ['::', '', '  ' + self.return_type]
-        argstr = ',\000'.join([self._format_arg(a) for a in self.args])
+        argstr = ',\000'.join([self._format_arg(*a) for a in self.args])
         name = '  %s' % (self.name,)
         s = textwrap.wrap('(%s)' % (argstr,), width=72,
                           initial_indent=name,
@@ -236,7 +240,7 @@ def find_functions(filename, tag='API'):
                 else:
                     function_args.append(line)
         except:
-            print filename, lineno+1
+            print(filename, lineno+1)
             raise
     fo.close()
     return functions
@@ -305,11 +309,11 @@ def main():
     functions = get_api_functions(tagname, order_file)
     m = md5.new(tagname)
     for func in functions:
-        print func
+        print(func)
         ah = func.api_hash()
         m.update(ah)
-        print hex(int(ah,16))
-    print hex(int(m.hexdigest()[:8],16))
+        print(hex(int(ah,16)))
+    print(hex(int(m.hexdigest()[:8],16)))
 
 if __name__ == '__main__':
     main()
