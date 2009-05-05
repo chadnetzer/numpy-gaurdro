@@ -2,6 +2,7 @@
 """
 
 import os
+import sys
 from glob import glob
 from distutils.command.build_clib import build_clib as old_build_clib
 from distutils.errors import DistutilsSetupError, DistutilsError, \
@@ -32,6 +33,31 @@ class build_clib(old_build_clib):
     def initialize_options(self):
         old_build_clib.initialize_options(self)
         self.fcompiler = None
+        return
+
+    def finalize_options(self):
+        # XXX: this is overriden for python3 case, which has a bug when
+        # checking distribution.libraries in finalize
+        if sys.version_info[0] < 3:
+            old_build_clib.finalize_options(self)
+        else:
+            # We copied this directly from build_clib.finalize_options
+            self.set_undefined_options('build',
+                                       ('build_temp', 'build_clib'),
+                                       ('build_temp', 'build_temp'),
+                                       ('compiler', 'compiler'),
+                                       ('debug', 'debug'),
+                                       ('force', 'force'))
+
+            self.libraries = self.distribution.libraries
+            if self.libraries:
+                self.check_library_list(self.libraries)
+
+            if self.include_dirs is None:
+                self.include_dirs = self.distribution.include_dirs or []
+            if isinstance(self.include_dirs, str):
+                self.include_dirs = self.include_dirs.split(os.pathsep)
+
         return
 
     def have_f_sources(self):
@@ -102,6 +128,31 @@ class build_clib(old_build_clib):
     def build_libraries(self, libraries):
         for (lib_name, build_info) in libraries:
             self.build_a_library(build_info, lib_name, libraries)
+
+    def check_library_list(self, libraries):
+        # Copied from python 3.1a build_clib function, but with bug fixed
+        if not isinstance(libraries, list):
+            raise DistutilsSetupError(
+                  "'libraries' option must be a list of tuples")
+
+        for lib in libraries:
+            if not isinstance(lib, tuple) and len(lib) != 2:
+                raise DistutilsSetupError(
+                      "each element of 'libraries' must a 2-tuple")
+
+            if not isinstance(lib[0], str):
+                raise DistutilsSetupError(
+                      "first element of each tuple in 'libraries' "
+                      "must be a string (the library name)")
+            if '/' in lib[0] or (os.sep != '/' and os.sep in lib[0]):
+                raise DistutilsSetupError("bad library name '%s': "
+                       "may not contain directory separators" % lib[0])
+
+            if not isinstance(lib[1], dict):
+                raise DistutilsSetupError(
+                      "second element of each tuple in 'libraries' "
+                      "must be a dictionary (build info)")
+
 
     def build_a_library(self, build_info, lib_name, libraries):
         # default compilers
