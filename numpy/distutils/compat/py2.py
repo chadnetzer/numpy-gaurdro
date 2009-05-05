@@ -1,5 +1,6 @@
 import imp
 import sys
+import warnings
 
 from distutils.errors import DistutilsExecError, CompileError
 
@@ -136,3 +137,31 @@ def caught_fcompiler_version(func, compiler):
         logdebug(repr(e))
 
     return c, v
+
+def getoutput(cmd, successful_status=(0,), stacklevel=1):
+    try:
+        status, output = commands.getstatusoutput(cmd)
+    except EnvironmentError, e:
+        warnings.warn(str(e), UserWarning, stacklevel=stacklevel)
+        return False, output
+    if os.WIFEXITED(status) and os.WEXITSTATUS(status) in successful_status:
+        return True, output
+    return False, output
+
+def open_cpuinfo(info):
+    try:
+        fo = open('/proc/cpuinfo')
+    except EnvironmentError, e:
+        warnings.warn(str(e), UserWarning)
+    else:
+        for line in fo:
+            name_value = [s.strip() for s in line.split(':', 1)]
+            if len(name_value) != 2:
+                continue
+            name, value = name_value
+            if not info or name in info[-1]: # next processor
+                info.append({})
+            info[-1][name] = value
+        fo.close()
+
+    return info

@@ -20,15 +20,7 @@ import commands
 import warnings
 import platform
 
-def getoutput(cmd, successful_status=(0,), stacklevel=1):
-    try:
-        status, output = commands.getstatusoutput(cmd)
-    except EnvironmentError, e:
-        warnings.warn(str(e), UserWarning, stacklevel=stacklevel)
-        return False, output
-    if os.WIFEXITED(status) and os.WEXITSTATUS(status) in successful_status:
-        return True, output
-    return False, output
+from numpy.distutils.compat import getoutput
 
 def command_info(successful_status=(0,), stacklevel=1, **kw):
     info = {}
@@ -76,7 +68,7 @@ class CPUInfoBase(object):
                     return lambda func=self._try_call,attr=attr : func(attr)
             else:
                 return lambda : None
-        raise AttributeError,name
+        raise AttributeError(name)
 
     def _getNCPUs(self):
         return 1
@@ -103,20 +95,7 @@ class LinuxCPUInfo(CPUInfoBase):
         ok, output = getoutput('uname -m')
         if ok:
             info[0]['uname_m'] = output.strip()
-        try:
-            fo = open('/proc/cpuinfo')
-        except EnvironmentError, e:
-            warnings.warn(str(e), UserWarning)
-        else:
-            for line in fo:
-                name_value = [s.strip() for s in line.split(':', 1)]
-                if len(name_value) != 2:
-                    continue
-                name, value = name_value
-                if not info or name in info[-1]: # next processor
-                    info.append({})
-                info[-1][name] = value
-            fo.close()
+        info = open_cpuinfo(info)
         self.__class__.info = info
 
     def _not_impl(self): pass
