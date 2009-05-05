@@ -5,9 +5,9 @@ import types
 
 from distutils.ccompiler import *
 from distutils import ccompiler
-from distutils.sysconfig import customize_compiler
 from distutils.version import LooseVersion
 
+from numpy.distutils.sysconfig import customize_compiler
 from numpy.distutils import log
 from numpy.distutils.exec_command import exec_command
 from numpy.distutils.misc_util import cyg2win32, is_sequence, mingw32, quote_args, msvc_on_amd64
