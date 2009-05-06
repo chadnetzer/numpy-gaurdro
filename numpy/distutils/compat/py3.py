@@ -1,3 +1,10 @@
+"""Compatibility module, mainly to deal with caught exceptions and a few other
+things whose syntax is incompatible between python 2 and python 3.
+
+DO NOT EDIT py3.py BY HAND.
+
+py2.py is the original file, py3.py is automatically generated from py2.py with
+2to3. It should alway work this way."""
 import imp
 import sys
 import warnings
