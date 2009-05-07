@@ -19,7 +19,7 @@ from numpy.core.numeric import ones, zeros, arange, concatenate, array, \
      asarray, asanyarray, empty, empty_like, ndarray, around
 from numpy.core.numeric import ScalarType, dot, where, newaxis, intp, \
      integer, isscalar
-from numpy.core.umath import pi, multiply, add, arctan2,  \
+from umath import pi, multiply, add, arctan2,  \
      frompyfunc, isnan, cos, less_equal, sqrt, sin, mod, exp, log10
 from numpy.core.fromnumeric import ravel, nonzero, choose, sort, mean
 from numpy.core.numerictypes import typecodes, number

@@ -140,11 +140,11 @@ else:
     from core import *
     import lib
     from lib import *
-    import linalg
-    import fft
+    #import linalg
+    #import fft
     import random
-    import ctypeslib
-    import ma
+    #import ctypeslib
+    #import ma
 
     # Make these accessible from numpy name-space
     #  but not imported in from numpy import *

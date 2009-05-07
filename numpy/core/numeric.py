@@ -13,7 +13,7 @@ __all__ = ['newaxis', 'ndarray', 'flatiter', 'ufunc',
            'little_endian', 'require',
            'fromiter', 'array_equal', 'array_equiv',
            'indices', 'fromfunction',
-           'load', 'loads', 'isscalar', 'binary_repr', 'base_repr',
+           'isscalar', 'binary_repr', 'base_repr',
            'ones', 'identity', 'allclose', 'compare_chararrays', 'putmask',
            'seterr', 'geterr', 'setbufsize', 'getbufsize',
            'seterrcall', 'geterrcall', 'errstate', 'flatnonzero',
@@ -1511,17 +1511,17 @@ def base_repr (number, base=2, padding=0):
         exponent -= 1
     return res
 
-from cPickle import load, loads
-_cload = load
-_file = file
-
-def load(file):
-    """Wrapper around cPickle.load which accepts either a file-like object or
-    a filename.
-    """
-    if isinstance(file, type("")):
-        file = _file(file,"rb")
-    return _cload(file)
+#from cPickle import load, loads
+#_cload = load
+#_file = file
+#
+#def load(file):
+#    """Wrapper around cPickle.load which accepts either a file-like object or
+#    a filename.
+#    """
+#    if isinstance(file, type("")):
+#        file = _file(file,"rb")
+#    return _cload(file)
 
 # These are all essentially abbreviations
 # These might wind up in a special abbreviations module

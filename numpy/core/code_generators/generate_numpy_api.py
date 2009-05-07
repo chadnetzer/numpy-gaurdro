@@ -79,7 +79,7 @@ static int
 _import_array(void)
 {
   int st;
-  PyObject *numpy = PyImport_ImportModule("numpy.core.multiarray");
+  PyObject *numpy = PyImport_ImportModule("multiarray");
   PyObject *c_api = NULL;
   if (numpy == NULL) return -1;
   c_api = PyObject_GetAttrString(numpy, "_ARRAY_API");

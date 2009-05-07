@@ -16,7 +16,7 @@ import records as rec
 from records import *
 from memmap import *
 from defchararray import *
-import scalarmath
+#import scalarmath
 del nt
 
 from fromnumeric import amax as max, amin as min, \

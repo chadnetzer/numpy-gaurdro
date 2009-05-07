@@ -1,5 +1,5 @@
 from numpy.testing import *
-import numpy.core.umath as ncu
+import umath as ncu
 import numpy as np
 
 class TestDivision(TestCase):

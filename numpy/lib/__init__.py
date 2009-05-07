@@ -10,7 +10,7 @@ from twodim_base import *
 from ufunclike import *
 
 import scimath as emath
-from polynomial import *
+#from polynomial import *
 from machar import *
 from getlimits import *
 #import convertcode
@@ -29,7 +29,7 @@ __all__ += shape_base.__all__
 __all__ += stride_tricks.__all__
 __all__ += twodim_base.__all__
 __all__ += ufunclike.__all__
-__all__ += polynomial.__all__
+#__all__ += polynomial.__all__
 __all__ += machar.__all__
 __all__ += getlimits.__all__
 __all__ += utils.__all__
