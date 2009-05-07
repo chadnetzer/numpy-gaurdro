@@ -2,7 +2,6 @@
 #include <Python.h>
 #include "structmember.h"
 
-/*#include <stdio.h>*/
 #define _MULTIARRAYMODULE
 #define NPY_NO_PREFIX
 #include "numpy/arrayobject.h"
