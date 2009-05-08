@@ -246,7 +246,10 @@ class scons(old_build_ext):
                                   'for the logging python module is valid'),
              ('package-list=', None, 'If specified, only run scons on the given '\
                  'packages (example: --package-list=scipy.cluster). If empty, '\
-                 'no package is built')]
+                 'no package is built'),
+             ('static=', None, 'specify whether to build static extensions (1) or ' \
+                 'not (0). May be useful to build a python binary statically linked ' \
+                 'With numpy (e.g. for code coverage with gcov)')]
 
     def initialize_options(self):
         old_build_ext.initialize_options(self)
@@ -266,6 +269,8 @@ class scons(old_build_ext):
 
         # Only critical things
         self.log_level = 50
+
+        self.static = 0
 
     def finalize_options(self):
         old_build_ext.finalize_options(self)
@@ -446,6 +451,7 @@ class scons(old_build_ext):
                         cmd.append('-s')
                 cmd.append('silent=%d' % int(self.silent))
                 cmd.append('bootstrapping=%d' % bootstrap)
+                cmd.append('python_build_static=%d' % int(self.static))
                 cmdstr = ' '.join(cmd)
                 if int(self.silent) < 1:
                     log.info("Executing scons command (pkg is %s): %s ", pkg_name, cmdstr)
