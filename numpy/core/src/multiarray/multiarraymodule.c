@@ -918,7 +918,10 @@ PyArray_Correlate(PyObject *op1, PyObject *op2, int mode)
     intp is1, is2, os;
     char *ip1, *ip2, *op;
     PyArray_DotFunc *dot;
+    PyArray_CopySwapFunc *copyswap;
     PyArray_Descr *typec;
+    int inverted;
+    char *tmp = NULL, *sw1, *sw2;
 
     NPY_BEGIN_THREADS_DEF;
 
@@ -939,6 +942,7 @@ PyArray_Correlate(PyObject *op1, PyObject *op2, int mode)
     n1 = ap1->dimensions[0];
     n2 = ap2->dimensions[0];
     if (n1 < n2) {
+        inverted = 1;
         ret = ap1;
         ap1 = ap2;
         ap2 = ret;
@@ -946,6 +950,8 @@ PyArray_Correlate(PyObject *op1, PyObject *op2, int mode)
         i = n1;
         n1 = n2;
         n2 = i;
+    } else {
+        inverted = 0;
     }
     length = n1;
     n = n2;
@@ -982,6 +988,12 @@ PyArray_Correlate(PyObject *op1, PyObject *op2, int mode)
                         "function not available for this data type");
         goto fail;
     }
+    copyswap = ret->descr->f->copyswap;
+
+    tmp = PyArray_malloc(ret->descr->elsize);
+    if (tmp == NULL) {
+        goto fail;
+    }
 
     NPY_BEGIN_THREADS_DESCR(ret->descr);
     is1 = ap1->strides[0];
@@ -1008,15 +1020,50 @@ PyArray_Correlate(PyObject *op1, PyObject *op2, int mode)
         ip1 += is1;
         op += os;
     }
+
+    /*
+     * If we inverted input orders, we need to reverse the output array (i.e.
+     * ret = ret[::-1])
+     */
+    if (inverted) {
+        os = ret->descr->elsize;
+        op = ret->data;
+        sw1 = op;
+        sw2 = op + (length - 1) * os;
+        if (PyArray_ISFLEXIBLE(ret) || PyArray_ISOBJECT(ret)) {
+            for(i = 0; i < length/2; ++i) {
+                memmove(tmp, sw1, os);
+                copyswap(tmp, NULL, 0, NULL);
+                memmove(sw1, sw2, os);
+                copyswap(sw1, NULL, 0, NULL);
+                memmove(sw2, tmp, os);
+                copyswap(sw2, NULL, 0, NULL);
+                sw1 += os;
+                sw2 -= os;
+            }
+        } else {
+            for(i = 0; i < length/2; ++i) {
+                memcpy(tmp, sw1, os);
+                memcpy(sw1, sw2, os);
+                memcpy(sw2, tmp, os);
+                sw1 += os;
+                sw2 -= os;
+            }
+        }
+    }
     NPY_END_THREADS_DESCR(ret->descr);
     if (PyErr_Occurred()) {
         goto fail;
     }
+    PyArray_free(tmp);
     Py_DECREF(ap1);
     Py_DECREF(ap2);
     return (PyObject *)ret;
 
  fail:
+    if (tmp) {
+        PyArray_free(tmp);
+    }
     Py_XDECREF(ap1);
     Py_XDECREF(ap2);
     Py_XDECREF(ret);
