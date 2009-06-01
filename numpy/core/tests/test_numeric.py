@@ -1,4 +1,7 @@
 import sys
+from decimal import Decimal
+
+import numpy as np
 from numpy.core import *
 from numpy.random import rand, randint, randn
 from numpy.testing import *
@@ -883,6 +886,27 @@ class TestLikeFuncs(TestCase):
             dz = zeros_like(d)
             assert dz.shape == dshape
             assert dz.dtype.type == dtype
+
+class TestCorrelate(TestCase):
+    def _setup(self, dt):
+        self.x = np.array([1, 2, 3, 4, 5], dtype=dt)
+        self.y = np.array([-1, -2, -3], dtype=dt)
+        self.z1 = np.array([ -3.,  -8., -14., -20., -26., -14.,  -5.], dtype=dt)
+        self.z2 = np.array([ -5.,  -14., -26., -20., -14., -8.,  -3.], dtype=dt)
+
+    def test_float(self):
+        self._setup(np.float)
+        z = np.correlate(self.x, self.y, 'full')
+        assert_array_almost_equal(z, self.z1)
+        z = np.correlate(self.y, self.x, 'full')
+        assert_array_almost_equal(z, self.z2)
+
+    def test_object(self):
+        self._setup(Decimal)
+        z = np.correlate(self.x, self.y, 'full')
+        assert_array_almost_equal(z, self.z1)
+        z = np.correlate(self.y, self.x, 'full')
+        assert_array_almost_equal(z, self.z2)
 
 
 if __name__ == "__main__":
