@@ -55,7 +55,7 @@ swab_separator(char *sep)
     int skip_space = 0;
     char *s, *start;
 
-    s = start = malloc(strlen(sep)+3);
+    s = start = _pya_malloc(strlen(sep)+3);
     /* add space to front if there isn't one */
     if (*sep != '\0' && !isspace(*sep)) {
         *s = ' '; s++;
@@ -434,7 +434,7 @@ _copy_from0d(PyArrayObject *dest, PyArrayObject *src, int usecopy, int swap)
     nbytes = PyArray_ITEMSIZE(src);
 
     if (!PyArray_ISALIGNED(src)) {
-        aligned = malloc((size_t)nbytes);
+        aligned = _pya_malloc((size_t)nbytes);
         if (aligned == NULL) {
             PyErr_NoMemory();
             return -1;
@@ -511,7 +511,7 @@ _copy_from0d(PyArrayObject *dest, PyArrayObject *src, int usecopy, int swap)
 
 finish:
     if (aligned != NULL) {
-        free(aligned);
+        _pya_free(aligned);
     }
     return retval;
 }
@@ -2849,7 +2849,7 @@ array_from_text(PyArray_Descr *dtype, intp num, char *sep, size_t *nread,
 	}
     }
     NPY_END_ALLOW_THREADS;
-    free(clean_sep);
+    _pya_free(clean_sep);
     if (err == 1) {
         PyErr_NoMemory();
     }

@@ -83,11 +83,11 @@ PyArray_CopyObject(PyArrayObject *dest, PyObject *src_object)
         n_new = dest->dimensions[dest->nd-1];
         n_old = PyString_Size(src_object);
         if (n_new > n_old) {
-            new_string = (char *)malloc(n_new);
+            new_string = (char *)_pya_malloc(n_new);
             memmove(new_string, PyString_AS_STRING(src_object), n_old);
             memset(new_string + n_old, ' ', n_new - n_old);
             tmp = PyString_FromStringAndSize(new_string, n_new);
-            free(new_string);
+            _pya_free(new_string);
             src_object = tmp;
         }
     }
@@ -429,12 +429,12 @@ _myunincmp(PyArray_UCS4 *s1, PyArray_UCS4 *s2, int len1, int len2)
 
     if ((intp)s1 % sizeof(PyArray_UCS4) != 0) {
         size = len1*sizeof(PyArray_UCS4);
-        s1t = malloc(size);
+        s1t = _pya_malloc(size);
         memcpy(s1t, s1, size);
     }
     if ((intp)s2 % sizeof(PyArray_UCS4) != 0) {
         size = len2*sizeof(PyArray_UCS4);
-        s2t = malloc(size);
+        s2t = _pya_malloc(size);
         memcpy(s2t, s2, size);
     }
     val = PyArray_CompareUCS4(s1t, s2t, MIN(len1,len2));
@@ -461,10 +461,10 @@ _myunincmp(PyArray_UCS4 *s1, PyArray_UCS4 *s2, int len1, int len2)
 
  finish:
     if (s1t != s1) {
-        free(s1t);
+        _pya_free(s1t);
     }
     if (s2t != s2) {
-        free(s2t);
+        _pya_free(s2t);
     }
     return val;
 }
@@ -551,7 +551,7 @@ static char *
 _char_copy_n_strip(char *original, char *temp, int nc)
 {
     if (nc > SMALL_STRING) {
-        temp = malloc(nc);
+        temp = _pya_malloc(nc);
         if (!temp) {
             PyErr_NoMemory();
             return NULL;
@@ -566,7 +566,7 @@ static void
 _char_release(char *ptr, int nc)
 {
     if (nc > SMALL_STRING) {
-        free(ptr);
+        _pya_free(ptr);
     }
 }
 
@@ -574,7 +574,7 @@ static char *
 _uni_copy_n_strip(char *original, char *temp, int nc)
 {
     if (nc*sizeof(PyArray_UCS4) > SMALL_STRING) {
-        temp = malloc(nc*sizeof(PyArray_UCS4));
+        temp = _pya_malloc(nc*sizeof(PyArray_UCS4));
         if (!temp) {
             PyErr_NoMemory();
             return NULL;
@@ -589,7 +589,7 @@ static void
 _uni_release(char *ptr, int nc)
 {
     if (nc*sizeof(PyArray_UCS4) > SMALL_STRING) {
-        free(ptr);
+        _pya_free(ptr);
     }
 }
 

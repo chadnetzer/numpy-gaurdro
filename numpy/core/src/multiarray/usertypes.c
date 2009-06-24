@@ -230,7 +230,7 @@ PyArray_RegisterCanCast(PyArray_Descr *descr, int totype,
          * -- they become part of the data-type
          */
         if (descr->f->cancastto == NULL) {
-            descr->f->cancastto = (int *)malloc(1*sizeof(int));
+            descr->f->cancastto = (int *)_pya_malloc(1*sizeof(int));
             descr->f->cancastto[0] = PyArray_NOTYPE;
         }
         descr->f->cancastto = _append_new(descr->f->cancastto,
@@ -241,14 +241,14 @@ PyArray_RegisterCanCast(PyArray_Descr *descr, int totype,
         if (descr->f->cancastscalarkindto == NULL) {
             int i;
             descr->f->cancastscalarkindto =
-                (int **)malloc(PyArray_NSCALARKINDS* sizeof(int*));
+                (int **)_pya_malloc(PyArray_NSCALARKINDS* sizeof(int*));
             for (i = 0; i < PyArray_NSCALARKINDS; i++) {
                 descr->f->cancastscalarkindto[i] = NULL;
             }
         }
         if (descr->f->cancastscalarkindto[scalar] == NULL) {
             descr->f->cancastscalarkindto[scalar] =
-                (int *)malloc(1*sizeof(int));
+                (int *)_pya_malloc(1*sizeof(int));
             descr->f->cancastscalarkindto[scalar][0] =
                 PyArray_NOTYPE;
         }

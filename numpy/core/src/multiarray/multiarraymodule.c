@@ -2354,6 +2354,75 @@ test_interrupt(PyObject *NPY_UNUSED(self), PyObject *args)
     return PyInt_FromLong(a);
 }
 
+static char magic[] = {'A', 'B', 'C', 'D'};
+
+/*NUMPY_API
+ */
+NPY_NO_EXPORT void *
+PyArray_MyMalloc(size_t n)
+{
+        char* yo;
+
+        //printf("%s\n", __func__);
+
+        yo = malloc(n+sizeof(magic));
+        memcpy(yo, magic, sizeof(magic));
+
+        return (void*)(yo + 4);
+}
+
+/*NUMPY_API
+ */
+NPY_NO_EXPORT void*
+PyArray_MyRealloc(void* p, size_t n)
+{
+        char *yo = p, *tmp;
+        int i;
+
+        //printf("%s\n", __func__);
+
+        yo -= 4;
+        for (i=0; i < 4; ++i) {
+                if (yo[i] != magic[i]) {
+                        printf("OUPS: %s\n", __func__);
+                        exit(EXIT_FAILURE);
+                }
+        }
+
+        tmp = realloc(yo,n+4);
+        if (tmp == NULL) {
+                return NULL;
+        } else {
+                memcpy(tmp, magic, sizeof(magic));
+                return tmp+4;
+        }
+}
+
+/*NUMPY_API
+ */
+NPY_NO_EXPORT void
+PyArray_MyFree(void* p)
+{
+        int i;
+        char *yo = p;
+
+        //printf("%s: %p\n", __func__, p);
+
+        if (p == NULL) {
+                return;
+        }
+        yo -= 4;
+
+        for (i=0; i < 4; ++i) {
+                if (yo[i] != magic[i]) {
+                        printf("OUPS: %s\n", __func__);
+                        exit(EXIT_FAILURE);
+                }
+        }
+
+        free(yo);
+}
+
 static struct PyMethodDef array_module_methods[] = {
     {"_get_ndarray_c_version",
         (PyCFunction)array__get_ndarray_c_version,

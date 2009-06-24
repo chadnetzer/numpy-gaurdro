@@ -259,16 +259,23 @@ typedef Py_uintptr_t npy_uintp;
   */
 
   /* Data buffer */
-#define PyDataMem_NEW(size) ((char *)malloc(size))
-#define PyDataMem_FREE(ptr)  free(ptr)
-#define PyDataMem_RENEW(ptr,size) ((char *)realloc(ptr,size))
+//#define PyDataMem_NEW(size) ((char *)malloc(size))
+//#define PyDataMem_FREE(ptr)  free(ptr)
+//#define PyDataMem_RENEW(ptr,size) ((char *)realloc(ptr,size))
+
+#define PyDataMem_NEW(size) PyArray_MyMalloc((size))
+#define PyDataMem_FREE(ptr)  PyArray_MyFree((ptr))
+#define PyDataMem_RENEW(ptr,size) PyArray_MyRealloc((ptr),(size))
 
 #define NPY_USE_PYMEM 1
 
 #if NPY_USE_PYMEM == 1
-#define PyArray_malloc PyMem_Malloc
-#define PyArray_free PyMem_Free
-#define PyArray_realloc PyMem_Realloc
+//#define PyArray_malloc PyMem_Malloc
+//#define PyArray_free PyMem_Free
+//#define PyArray_realloc PyMem_Realloc
+#define PyArray_malloc PyArray_MyMalloc
+#define PyArray_free PyArray_MyFree
+#define PyArray_realloc PyArray_MyRealloc
 #else
 #define PyArray_malloc malloc
 #define PyArray_free free

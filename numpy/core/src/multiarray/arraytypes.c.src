@@ -258,7 +258,7 @@ UNICODE_getitem(char *ip, PyArrayObject *ap)
     intp i;
 
     if (!PyArray_ISBEHAVED_RO(ap)) {
-        buffer = malloc(elsize);
+        buffer = _pya_malloc(elsize);
         if (buffer == NULL) {
             PyErr_NoMemory();
             goto fail;
@@ -291,13 +291,13 @@ UNICODE_getitem(char *ip, PyArrayObject *ap)
 #endif
 
     if (alloc) {
-        free(buffer);
+        _pya_free(buffer);
     }
     return (PyObject *)obj;
 
 fail:
     if (alloc) {
-        free(buffer);
+        _pya_free(buffer);
     }
     return NULL;
 }

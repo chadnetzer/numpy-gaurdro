@@ -1953,11 +1953,11 @@ static PyObject *
      */
     if (obj == NULL) {
 #if @default@ == 0
-        char *mem = malloc(sizeof(@name@));
+        char *mem = _pya_malloc(sizeof(@name@));
 
         memset(mem, 0, sizeof(@name@));
         robj = PyArray_Scalar(mem, typecode, NULL);
-        free(mem);
+        _pya_free(mem);
 #elif @default@ == 1
         robj = PyArray_Scalar(NULL, typecode, NULL);
 #elif @default@ == 2

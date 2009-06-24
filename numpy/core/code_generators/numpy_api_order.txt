@@ -175,3 +175,6 @@ PyArray_GetEndianness
 PyArray_GetNDArrayCFeatureVersion
 PyArray_Acorrelate
 PyArray_NeighborhoodIterNew
+PyArray_MyMalloc
+PyArray_MyRealloc
+PyArray_MyFree
