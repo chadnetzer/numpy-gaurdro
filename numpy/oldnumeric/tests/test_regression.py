@@ -1,5 +1,7 @@
 from numpy.testing import *
 
+rlevel = 1
+
 class TestRegression(TestCase):
     def test_numeric_random(self, level=rlevel):
         """Ticket #552"""

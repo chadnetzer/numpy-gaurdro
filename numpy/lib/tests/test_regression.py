@@ -1,7 +1,25 @@
+import sys
+
 from numpy.testing import *
 import numpy as np
 
-class TestRegression(object):
+rlevel = 1
+
+# Copied from core.tests.test_regression.py
+def assert_valid_refcount(op):
+    a = np.arange(100 * 100)
+    b = np.arange(100*100).reshape(100, 100)
+    c = b
+
+    i = 1
+
+    rc = sys.getrefcount(i)
+    for j in range(15):
+        d = op(b,c)
+
+    assert(sys.getrefcount(i) >= rc)
+
+class TestRegression(TestCase):
     def test_poly1d(self,level=rlevel):
         """Ticket #28"""
         assert_equal(np.poly1d([1]) - np.poly1d([1,0]),

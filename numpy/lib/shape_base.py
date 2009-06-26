@@ -6,6 +6,7 @@ import numpy.core.numeric as _nx
 from numpy.core.numeric import asarray, zeros, newaxis, outer, \
      concatenate, isscalar, array, asanyarray
 from numpy.core.fromnumeric import product, reshape
+from numpy.core import hstack, vstack, atleast_3d
 
 def apply_along_axis(func1d,axis,arr,*args):
     """

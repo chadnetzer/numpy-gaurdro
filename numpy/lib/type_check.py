@@ -275,8 +275,8 @@ def isrealobj(x):
 #-----------------------------------------------------------------------------
 
 def _getmaxmin(t):
-    import getlimits
-    f = getlimits.finfo(t)
+    from numpy.core import finfo
+    f = finfo(t)
     return f.max, f.min
 
 def nan_to_num(x):
@@ -400,8 +400,8 @@ def real_if_close(a,tol=100):
     if not issubclass(a.dtype.type, _nx.complexfloating):
         return a
     if tol > 1:
-        import getlimits
-        f = getlimits.finfo(a.dtype.type)
+        from numpy.core import finfo
+        f = finfo(a.dtype.type)
         tol = f.eps * tol
     if _nx.allclose(a.imag, 0, atol=tol):
         a = a.real

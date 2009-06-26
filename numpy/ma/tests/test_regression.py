@@ -1,6 +1,8 @@
 from numpy.testing import *
 import numpy as np
 
+rlevel = 1
+
 class TestRegression(TestCase):
     def test_masked_array_create(self,level=rlevel):
         """Ticket #17"""
