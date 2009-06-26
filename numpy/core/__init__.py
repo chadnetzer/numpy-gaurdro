@@ -18,6 +18,8 @@ from defchararray import *
 import scalarmath
 from function_base import *
 from shape_base import *
+from machar import *
+from getlimits import *
 del nt
 
 from fromnumeric import amax as max, amin as min, \
@@ -31,6 +33,8 @@ __all__ += rec.__all__
 __all__ += char.__all__
 __all__ += function_base.__all__
 __all__ += shape_base.__all__
+__all__ += machar.__all__
+__all__ += getlimits.__all__
 
 
 from numpy.testing import Tester
