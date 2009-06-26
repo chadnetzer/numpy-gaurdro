@@ -527,7 +527,7 @@ def assert_array_almost_equal(x, y, decimal=6, err_msg='', verbose=True):
 
     """
     from numpy.core import around, number, float_
-    from numpy.lib import issubdtype
+    from numpy import issubdtype
     def compare(x, y):
         z = abs(x-y)
         if not issubdtype(z.dtype, number):
