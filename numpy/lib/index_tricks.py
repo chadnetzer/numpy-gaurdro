@@ -12,7 +12,7 @@ from numpy.core.numerictypes import find_common_type
 import math
 
 import function_base
-import numpy.core.defmatrix as matrix
+import numpy.matrx as matrix
 makemat = matrix.matrix
 
 # contributed by Stefan van der Walt

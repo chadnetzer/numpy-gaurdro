@@ -1,5 +1,6 @@
 from numpy.testing import *
 from numpy.core import *
+from numpy import matrix, asmatrix, bmat
 import numpy as np
 
 class TestCtor(TestCase):
