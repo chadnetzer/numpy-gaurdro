@@ -18,6 +18,13 @@
 #ifndef _NPY_MATH_PRIVATE_H_
 #define	_NPY_MATH_PRIVATE_H_
 
+#include <Python.h>
+#include <math.h>
+
+//#include "config.h"
+#include "numpy/npy_math.h"
+#include "numpy/npy_endian.h"
+
 /*
  * The original fdlibm code used statements like:
  *	n0 = ((*(int*)&one)>>29)^1;		* index of high word *
@@ -47,8 +54,8 @@ typedef union
   double value;
   struct
   {
-    npy_uint32_t msw;
-    npy_uint32_t lsw;
+    npy_uint32 msw;
+    npy_uint32 lsw;
   } parts;
 } ieee_double_shape_type;
 
@@ -61,8 +68,8 @@ typedef union
   double value;
   struct
   {
-    u_int32_t lsw;
-    u_int32_t msw;
+    npy_uint32 lsw;
+    npy_uint32 msw;
   } parts;
 } ieee_double_shape_type;
 
@@ -95,5 +102,55 @@ do {								\
   gl_u.value = (d);						\
   (i) = gl_u.parts.lsw;						\
 } while (0)
+
+/*
+ * C99 specifies that complex numbers have the same representation as
+ * an array of two elements, where the first element is the real part
+ * and the second element is the imaginary part.
+ */
+#ifdef HAVE_COMPLEX_H
+#include "complex.h"
+typedef complex npy_complex_double;
+typedef union {
+        npy_complex_double npy;
+        complex c99;
+} _double_complex;
+#else
+typedef struct {
+        double x, y;
+} npy_complex_double;
+typedef union {
+        npy_complex_double npy;
+        npy_complex_double c99;
+} _double_complex;
+#endif
+
+#if 0
+typedef union {
+        npy_complex_float f;
+        float a[2];
+} _float_complex;
+#endif
+#if 0
+typedef union {
+        npy_complex_longdouble f;
+        npy_longdouble a[2];
+} _long_double_complex;
+#endif
+
+/* those can be used as lvalues */
+#define REALPART(z)     ((z).a[0])
+#define IMAGPART(z)     ((z).a[1])
+
+static inline npy_complex_double cpack(double x, double y)
+{
+        _double_complex z;
+
+#if 0
+        REALPART(z.npy_z) = x;
+        IMAGPART(z.npy_z) = y;
+#endif
+        return z.npy;
+}
 
 #endif /* !_NPY_MATH_PRIVATE_H_ */

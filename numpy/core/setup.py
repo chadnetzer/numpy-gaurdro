@@ -590,7 +590,8 @@ def configuration(parent_package='',top_path=None):
     # explicitly add an extension which has generate_config_h and
     # generate_numpyconfig_h as sources *before* adding npymath.
     config.add_library('npymath',
-            sources=[join('src', 'npymath', 'npy_math.c.src')])
+            sources=[join('src', 'npymath', 'npy_math.c.src'),
+                     join('src', 'npymath', 'npy_math_complex.c.src')])
     
     multiarray_deps = [
             join('src', 'multiarray', 'arrayobject.h'),
