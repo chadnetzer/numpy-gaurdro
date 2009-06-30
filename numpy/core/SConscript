@@ -200,7 +200,16 @@ if ENABLE_SEPARATE_COMPILATION:
     config.Define("ENABLE_SEPARATE_COMPILATION", 1)
     numpyconfig_sym.append(('NPY_ENABLE_SEPARATE_COMPILATION', 1))
 
-# Checking for visibility macro
+#-----------------------------
+# Checking for complex support
+#-----------------------------
+if config.CheckHeader('complex.h'):
+    st = config.CheckFuncsAtOnce(C99_COMPLEX_FUNCS)
+    if not st:
+        # Global check failed, check func per func
+        for f in C99_COMPLEX_FUNCS:
+            config.CheckFunc(f, language='C')
+
 def visibility_define():
     if config.CheckGCC4():
         return '__attribute__((visibility("hidden")))'
