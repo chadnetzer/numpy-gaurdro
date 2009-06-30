@@ -771,5 +771,15 @@ typedef struct {npy_longdouble real, imag;} npy_clongdouble;
 
 /* End of typedefs for numarray style bit-width names */
 
+#ifdef NPY_USE_C99_COMPLEX
+#include "complex.h"
+typedef complex npy_complex_double;
+#else
+#undef complex
+typedef struct {
+        double x, y;
+} npy_complex_double;
+#endif
+
 #endif
 
