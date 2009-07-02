@@ -427,6 +427,11 @@ add_newdoc('numpy.core.umath', 'arctan2',
 
     """)
 
+add_newdoc('numpy.core.umath', '_arg',
+    """
+    DO NOT USE, ONLY FOR TESTING
+    """)
+
 add_newdoc('numpy.core.umath', 'arctanh',
     """
     Inverse hyperbolic tangent elementwise.
@@ -2611,6 +2616,33 @@ add_newdoc('numpy.core.umath', 'signbit',
     True
     >>> np.signbit(np.array([1, -2.3, 2.1]))
     array([False,  True, False], dtype=bool)
+
+    """)
+
+add_newdoc('numpy.core.umath', 'copysign',
+    """
+    Change the sign of x to that of y  element-wise.
+
+    Parameters
+    ----------
+    x: array_like
+        Values to change the sign of.
+    y: array_like
+        The sign of y is copied to x.
+
+    Returns
+    -------
+    out : array_like
+        values of x with the sign of y
+
+    Examples
+    --------
+    >>> np.copysign(1.3, -1)
+    -1.3
+    >>> 1/np.copysign(0, 1)
+    inf
+    >>> 1/np.copysign(0, -1)
+    -inf
 
     """)
 
