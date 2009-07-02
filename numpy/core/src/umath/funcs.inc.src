@@ -160,29 +160,10 @@ nc_quot@c@(c@typ@ *a, c@typ@ *b, c@typ@ *r)
     return;
 }
 
-static void
+static inline void
 nc_sqrt@c@(c@typ@ *x, c@typ@ *r)
 {
-    @typ@ s,d;
-    if (x->real == 0. && x->imag == 0.)
-        *r = *x;
-    else {
-        s = npy_sqrt@c@((npy_fabs@c@(x->real) + npy_hypot@c@(x->real,x->imag))/2);
-        d = x->imag/(2*s);
-        if (x->real > 0) {
-            r->real = s;
-            r->imag = d;
-        }
-        else if (x->imag >= 0) {
-            r->real = d;
-            r->imag = s;
-        }
-        else {
-            r->real = -d;
-            r->imag = -s;
-        }
-    }
-    return;
+    *r = npy_csqrt@c@(*x);
 }
 
 static void
@@ -192,12 +173,10 @@ nc_rint@c@(c@typ@ *x, c@typ@ *r)
     r->imag = npy_rint@c@(x->imag);
 }
 
-static void
+static inline void
 nc_log@c@(c@typ@ *x, c@typ@ *r)
 {
-    @typ@ l = npy_hypot@c@(x->real,x->imag);
-    r->imag = npy_atan2@c@(x->imag, x->real);
-    r->real = npy_log@c@(l);
+    *r = npy_clog@c@(*x);
     return;
 }
 
@@ -210,13 +189,10 @@ nc_log1p@c@(c@typ@ *x, c@typ@ *r)
     return;
 }
 
-static void
+static inline void
 nc_exp@c@(c@typ@ *x, c@typ@ *r)
 {
-    @typ@ a = npy_exp@c@(x->real);
-    r->real = a*npy_cos@c@(x->imag);
-    r->imag = a*npy_sin@c@(x->imag);
-    return;
+    *r = npy_cexp@c@(*x);
 }
 
 static void
@@ -507,13 +483,10 @@ nc_atanh@c@(c@typ@ *x, c@typ@ *r)
     return;
 }
 
-static void
+static inline void
 nc_cos@c@(c@typ@ *x, c@typ@ *r)
 {
-    @typ@ xr=x->real, xi=x->imag;
-    r->real = npy_cos@c@(xr)*npy_cosh@c@(xi);
-    r->imag = -npy_sin@c@(xr)*npy_sinh@c@(xi);
-    return;
+    *r = npy_ccos@c@(*x);
 }
 
 static void
@@ -543,13 +516,10 @@ nc_log2@c@(c@typ@ *x, c@typ@ *r)
     return;
 }
 
-static void
+static inline void
 nc_sin@c@(c@typ@ *x, c@typ@ *r)
 {
-    @typ@ xr=x->real, xi=x->imag;
-    r->real = npy_sin@c@(xr)*npy_cosh@c@(xi);
-    r->imag = npy_cos@c@(xr)*npy_sinh@c@(xi);
-    return;
+    *r = npy_csin@c@(*x);
 }
 
 static void
