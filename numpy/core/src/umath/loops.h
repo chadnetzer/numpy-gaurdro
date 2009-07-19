@@ -1964,6 +1964,9 @@ NPY_NO_EXPORT void
 CFLOAT_absolute(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
 
 NPY_NO_EXPORT void
+CFLOAT__arg(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
+
+NPY_NO_EXPORT void
 CFLOAT_sign(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
 
 NPY_NO_EXPORT void
@@ -2048,6 +2051,9 @@ CDOUBLE_conjugate(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(f
 
 NPY_NO_EXPORT void
 CDOUBLE_absolute(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
+
+NPY_NO_EXPORT void
+CDOUBLE__arg(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
 
 NPY_NO_EXPORT void
 CDOUBLE_sign(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
@@ -2140,6 +2146,9 @@ CLONGDOUBLE_conjugate(char **args, intp *dimensions, intp *steps, void *NPY_UNUS
 
 NPY_NO_EXPORT void
 CLONGDOUBLE_absolute(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
+
+NPY_NO_EXPORT void
+CLONGDOUBLE__arg(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
 
 NPY_NO_EXPORT void
 CLONGDOUBLE_sign(char **args, intp *dimensions, intp *steps, void *NPY_UNUSED(func));
