@@ -78,6 +78,19 @@ Items are not almost equal:
     else:
         assert_almost_equal(x, y)
 
+class TestHypot(object):
+    def test_simple(self):
+        x = np.array([1.])
+
+        assert_array_almost_equal(np.hypot(x, x), np.sqrt(2))
+
+    def test_nan_inf(self):
+        assert_almost_equal_spec(np.hypot(np.inf, np.nan), np.inf)
+        assert_almost_equal_spec(np.hypot(-np.inf, np.nan), np.inf)
+
+        assert_almost_equal_spec(np.hypot(np.nan, np.inf), np.inf)
+        assert_almost_equal_spec(np.hypot(np.nan, -np.inf), np.inf)
+
 class TestCexp(object):
     def test_simple(self):
         check = check_complex_value 
