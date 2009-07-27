@@ -145,6 +145,13 @@ class TestEqual(TestArrayEqual):
         self._assert_func('ab', 'ab')
         self._test_not_equal('ab', 'abb')
 
+    def test_complex(self):
+        self._assert_func(complex(1, 2), complex(1, 2))
+        self._assert_func(complex(1, np.nan), complex(1, np.nan))
+        self._test_not_equal(complex(1, np.nan), complex(1, 2))
+        self._test_not_equal(complex(np.nan, 1), complex(1, np.nan))
+        self._test_not_equal(complex(np.nan, np.inf), complex(np.nan, 2))
+
 class TestArrayAlmostEqual(_GenericTest, unittest.TestCase):
     def setUp(self):
         self._assert_func = assert_array_almost_equal

@@ -215,12 +215,38 @@ def assert_equal(actual,desired,err_msg='',verbose=True):
         for k in range(len(desired)):
             assert_equal(actual[k], desired[k], 'item=%r\n%s' % (k,err_msg), verbose)
         return
-    from numpy.core import ndarray, isscalar
+    from numpy.core import ndarray, isscalar, signbit
+    from numpy.lib import iscomplexobj, real, imag
     if isinstance(actual, ndarray) or isinstance(desired, ndarray):
         return assert_array_equal(actual, desired, err_msg, verbose)
     msg = build_err_msg([actual, desired], err_msg, verbose=verbose)
 
+    # Handle complex numbers: separate into real/imag to handle
+    # nan/inf/negative zero correctly
+    if not iscomplexobj(actual) == iscomplexobj(desired):
+        raise AssertionError("Items are not equal:\n" \
+                             "ACTUAL: %s\n" \
+                             "DESIRED: %s\n" % (str(actual), str(desired)))
+
+    if iscomplexobj(actual):
+        actualr = real(actual)
+        desiredr = real(desired)
+        actuali = imag(actual)
+        desiredi = imag(desired)
+        try:
+            assert_equal(actualr, desiredr)
+            assert_equal(actuali, desiredi)
+        except AssertionError:
+            raise AssertionError("Items are not equal:\n" \
+                    "ACTUAL: %s\n" \
+                    "DESIRED: %s\n" % (str(actual), str(desired)))
+
+    # Inf/nan/negative zero handling
     try:
+        # isscalar test to check cases such as [np.nan] != np.nan
+        if isscalar(desired) != isscalar(actual):
+            raise AssertionError(msg)
+
         # If one of desired/actual is not finite, handle it specially here:
         # check that both are nan if any is a nan, and test for equality
         # otherwise
@@ -228,14 +254,15 @@ def assert_equal(actual,desired,err_msg='',verbose=True):
             isdesnan = gisnan(desired)
             isactnan = gisnan(actual)
             if isdesnan or isactnan:
-                # isscalar test to check so that [np.nan] != np.nan
-                if not (isdesnan and isactnan) \
-                   or (isscalar(isdesnan) != isscalar(isactnan)):
+                if not (isdesnan and isactnan):
                     raise AssertionError(msg)
             else:
                 if not desired == actual:
                     raise AssertionError(msg)
             return
+        elif desired == 0 and actual == 0:
+            if not signbit(desired) == signbit(actual):
+                raise AssertionError(msg)
     # If TypeError or ValueError raised while using isnan and co, just handle
     # as before
     except TypeError:
@@ -426,9 +453,18 @@ def assert_approx_equal(actual,desired,significant=7,err_msg='',verbose=True):
 
 def assert_array_compare(comparison, x, y, err_msg='', verbose=True,
                          header=''):
-    from numpy.core import array, isnan, any
+    from numpy.core import array, isnan, any, isscalar
     x = array(x, copy=False, subok=True)
     y = array(y, copy=False, subok=True)
+
+    if x.shape != y.shape:
+        msg = build_err_msg([x, y],
+                            err_msg
+                            + '\n(x and y rank do not match %s, ' \
+                            '%s mismatch)' % (x.shape, y.shape),
+                            verbose=verbose, header=header,
+                            names=('x', 'y'))
+        raise AssertionError(msg)
 
     def isnumber(x):
         return x.dtype.char in '?bhilqpBHILQPfdgFDG'
@@ -461,6 +497,8 @@ def assert_array_compare(comparison, x, y, err_msg='', verbose=True,
                                     verbose=verbose, header=header,
                                     names=('x', 'y'))
                 raise AssertionError(msg)
+            if x.shape == ():
+                return
             val = comparison(x[~xnanid], y[~ynanid])
         else:
             val = comparison(x,y)
