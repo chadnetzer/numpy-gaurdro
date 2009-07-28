@@ -8,6 +8,58 @@ from numpy import multiply, atleast_2d, inf, asarray, matrix
 from numpy import linalg
 from numpy.linalg import matrix_power, norm
 
+def nulps_array(a, b, dtype=None):
+    if dtype:
+        a = np.array(a, dtype=dtype)
+        b = np.array(b, dtype=dtype)
+    else:
+        a = np.array(a)
+        b = np.array(b)
+    t = np.common_type(a, b)
+    if np.iscomplexobj(a) or np.iscomplexobj(b):
+        ra = np.real(a)
+        ia = np.imag(a)
+
+        rb = np.real(b)
+        ib = np.imag(b)
+
+        n1 = nulps_array(ra, rb)
+        n2 = nulps_array(ia, ib)
+        return n1, n2
+
+    if not t in [np.float32, np.float64]:
+        raise ValueError("Could not convert both arrays to supported type")
+
+    a = np.array(a, dtype=t)
+    b = np.array(b, dtype=t)
+
+    if not a.shape == b.shape:
+        raise ValueError("a and b do not have the same shape")
+
+    def _nulps(vdt, comp):
+        # Reinterpret float as integer, to compare the integer representation
+        ra = a.view(vdt)
+        rb = b.view(vdt)
+        if not (ra.size == rb.size == 1):
+            ra[ra < 0] = comp - ra[ra<0]
+            rb[rb < 0] = comp - rb[rb<0]
+        else:
+            if ra < 0:
+                ra = comp - ra
+            if rb < 0:
+                rb = comp - rb
+
+        diff = np.array(ra-rb, dtype=vdt)
+        r = np.abs(diff)
+        return r
+
+    if a.dtype == np.float32:
+        return _nulps(np.int32, np.int32(-2**31))
+    elif a.dtype == np.float64:
+        return _nulps(np.int64, np.int64(-2**63))
+    else:
+        raise ValueError("Unsupported dtype %s" % a.dtype)
+
 def ifthen(a, b):
     return not a or b
 
@@ -18,9 +70,13 @@ def imply(a, b):
 def assert_almost_equal(a, b, **kw):
     if asarray(a).dtype.type in (single, csingle):
         decimal = 6
+        nulps = nulps_array(a, b, dtype=np.float32)
+        assert np.max(nulps) < 50, "%s | %s | %s" % (nulps, str(a), str(b))
     else:
         decimal = 12
-    old_assert_almost_equal(a, b, decimal=decimal, **kw)
+        nulps = nulps_array(a, b, dtype=np.float64)
+        assert np.max(nulps) < 500, "%s | %s | %s" % (nulps, str(a), str(b))
+    #old_assert_almost_equal(a, b, decimal=decimal, **kw)
 
 class LinalgTestCase:
     def test_single(self):
