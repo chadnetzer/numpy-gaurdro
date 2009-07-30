@@ -320,6 +320,46 @@ double npy_cimag(npy_cdouble z);
 double npy_cabs(npy_cdouble z);
 double npy_carg(npy_cdouble z);
 
+static NPY_INLINE npy_cdouble npy_cadd(npy_cdouble z1, npy_cdouble z2)
+{
+    npy_cdouble ret = npy_cpack(npy_creal(z1) + npy_creal(z2),
+		    npy_cimag(z1) + npy_cimag(z2)); 
+    return ret;
+}
+
+static NPY_INLINE npy_cdouble npy_csub(npy_cdouble z1, npy_cdouble z2)
+{
+    npy_cdouble ret = npy_cpack(npy_creal(z1) - npy_creal(z2),
+		    npy_cimag(z1) - npy_cimag(z2)); 
+    return ret;
+}
+
+static NPY_INLINE npy_cdouble npy_cmul(npy_cdouble z1, npy_cdouble z2)
+{
+    double z1r, z1i, z2r, z2i;
+
+    z1r = npy_creal(z1);	
+    z2r = npy_creal(z2);	
+    z1i = npy_cimag(z1);	
+    z2i = npy_cimag(z2);	
+    npy_cdouble ret = npy_cpack(z1r*z2r - z1i * z2i, z1r * z2i + z1i * z2r);
+    return ret;
+}
+
+static NPY_INLINE npy_cdouble npy_cdiv(npy_cdouble z1, npy_cdouble z2)
+{
+    double z1r, z1i, z2r, z2i, mod;
+
+    z1r = npy_creal(z1);	
+    z2r = npy_creal(z2);	
+    z1i = npy_cimag(z1);	
+    z2i = npy_cimag(z2);	
+    mod = 1 / (z2i * z2i + z2r * z2r);
+    npy_cdouble ret = npy_cpack(mod * (z1r*z2r + z1i * z2i),
+         mod * (z1r - z2i + z1i * z2r));
+    return ret;
+}
+
 npy_cdouble npy_cexp(npy_cdouble z);
 npy_cdouble npy_clog(npy_cdouble z);
 npy_cdouble npy_cpow(npy_cdouble x, npy_cdouble y);
