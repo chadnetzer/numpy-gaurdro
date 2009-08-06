@@ -355,10 +355,77 @@ _neigh_iter_get_ptr_const(PyArrayNeighborhoodIterObject* niter)
 }
 #undef _INF_SET_PTR
 
+#define _NPY_IS_EVEN(x) ((x) % 2 == 0)
+
+/* For an array x of dimension n, and given index i, returns j, 0 <= j < n
+ * such as x[i] = x[j], with x assumed to be mirrored. For example, for x =
+ * {1, 2, 3} (n = 3)
+ *
+ * index -5 -4 -3 -2 -1 0 1 2 3 4 5 6
+ * value  2  3  3  2  1 1 2 3 3 2 1 1
+ *
+ * _npy_pos_index_mirror(4, 3) will return 1, because x[4] = x[1]*/
+static inline npy_intp
+___npy_pos_remainder(npy_intp i, npy_intp n)
+{
+    npy_intp k, l, j;
+
+    /* Mirror i such as it is guaranteed to be positive */
+    if (i < 0) {
+        i = - i - 1;
+    }
+
+    /* compute k and l such as i = k * n + l, 0 <= l < k */
+    k = i / n;
+    l = i - k * n;
+
+    if (_NPY_IS_EVEN(k)) {
+        j = l;
+    } else {
+        j = n - 1 - l;
+    }
+    return j;
+}
+#undef _NPY_IS_EVEN
+#define _INF_SET_PTR_MIRROR(c) \
+    lb = p->bounds[c][0]; \
+    bd = coordinates[c] + p->coordinates[c] - lb; \
+    _coordinates[c] = ___npy_pos_remainder(bd, niter->dimensions[c] - lb) + lb;
+
+npy_intp _coordinates[NPY_MAXDIMS];
+/* set the dataptr from its current coordinates */
+static inline char*
+__get_ptr_mirror(PyArrayIterObject* _iter, npy_intp *coordinates)
+{
+    int i;
+    npy_intp bd, lb;
+    npy_intp truepos;
+    PyArrayNeighborhoodIterObject *niter = (PyArrayNeighborhoodIterObject*)_iter;
+    PyArrayIterObject *p = niter->_internal_iter;
+
+    //printf("%s\n", __func__);
+    for(i = 0; i < niter->nd; ++i) {
+        _INF_SET_PTR_MIRROR(i)
+        // // printf("bounds: %ld - %ld\n", p->bounds[i][0], p->bounds[i][1]);
+        // bd = coordinates[i] + p->coordinates[i];
+        // bd -= p->bounds[i][0];
+        // // printf("bd: %ld - max %ld\n", bd, p->bounds[i][1] - p->bounds[i][0]);
+        // truepos = __npy_pos_remainder(bd, p->bounds[i][1] + 1 - p->bounds[i][0]);
+        // // printf("truepos: %ld \n", truepos);
+        // _coordinates[i] = (truepos + p->bounds[i][0]);
+        // // printf("_cordinates: %ld \n", _coordinates[i]);
+    }
+
+    // printf("%s: coordinates is %ld | %ld -> %ld\n", __func__, coordinates[0], p->coordinates[0], _coordinates[0]);
+    return p->translate(p, _coordinates);
+}
+#undef _INF_SET_PTR_MIRROR
+
 static NPY_INLINE int
 PyArrayNeighborhoodIter_Next(PyArrayNeighborhoodIterObject* iter)
 {
     _PyArrayNeighborhoodIter_IncrCoord (iter);
+    // iter->dataptr = iter->translate((PyArrayIterObject*)iter, iter->coordinates);
     switch (iter->mode) {
         case NPY_NEIGHBORHOOD_ITER_ZERO_PADDING:
         case NPY_NEIGHBORHOOD_ITER_ONE_PADDING:
@@ -368,7 +435,8 @@ PyArrayNeighborhoodIter_Next(PyArrayNeighborhoodIterObject* iter)
             break;
         case NPY_NEIGHBORHOOD_ITER_MIRROR_PADDING:
             //_PyArrayNeighborhoodIter_SetPtrMirror(iter);
-            iter->dataptr = iter->translate((PyArrayIterObject*)iter, iter->coordinates);
+            // iter->dataptr = iter->translate((PyArrayIterObject*)iter, iter->coordinates);
+            iter->dataptr = __get_ptr_mirror(iter, iter->coordinates);
             break;
         case NPY_NEIGHBORHOOD_ITER_CIRCULAR_PADDING:
             _PyArrayNeighborhoodIter_SetPtrCircular(iter);
