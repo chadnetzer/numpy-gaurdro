@@ -1813,7 +1813,7 @@ get_ptr_constant(PyArrayIterObject* _iter, npy_intp *coordinates)
         _INF_SET_PTR(i)
     }
 
-    printf("%s: coordinates is %ld, ptr is %f\n", __func__, _coordinates[0], *((double*)p->translate(p, _coordinates)));
+    // printf("%s: coordinates is %ld, ptr is %f\n", __func__, _coordinates[0], *((double*)p->translate(p, _coordinates)));
     return p->translate(p, _coordinates);
 }
 #undef _INF_SET_PTR
@@ -1852,10 +1852,14 @@ __npy_pos_remainder(npy_intp i, npy_intp n)
 #undef _NPY_IS_EVEN
 
 #define _INF_SET_PTR_MIRROR(c) \
+        printf("bounds: %ld - %ld\n", p->bounds[c][0], p->bounds[c][1]); \
     bd = coordinates[c] + p->coordinates[c]; \
     bd -= p->bounds[c][0]; \
+        printf("bd: %ld - max %ld\n", bd, p->bounds[c][1] - p->bounds[c][0]); \
     truepos = __npy_pos_remainder(bd, niter->dimensions[c] - p->bounds[c][0]); \
-    _coordinates[c] = (truepos - p->coordinates[c] + p->bounds[c][0]);
+        printf("truepos: %ld \n", truepos); \
+    _coordinates[c] = (truepos + p->bounds[c][0]); \
+        printf("_cordinates: %ld \n", _coordinates[c]); \
 
 /* set the dataptr from its current coordinates */
 static char*
@@ -1867,12 +1871,20 @@ get_ptr_mirror(PyArrayIterObject* _iter, npy_intp *coordinates)
     PyArrayNeighborhoodIterObject *niter = (PyArrayNeighborhoodIterObject*)_iter;
     PyArrayIterObject *p = niter->_internal_iter;
 
-    printf("%s\n", __func__);
+    //printf("%s\n", __func__);
     for(i = 0; i < niter->nd; ++i) {
-        _INF_SET_PTR_MIRROR(i)
+        // _INF_SET_PTR_MIRROR(i)
+        // printf("bounds: %ld - %ld\n", p->bounds[i][0], p->bounds[i][1]);
+        bd = coordinates[i] + p->coordinates[i];
+        bd -= p->bounds[i][0];
+        // printf("bd: %ld - max %ld\n", bd, p->bounds[i][1] - p->bounds[i][0]);
+        truepos = __npy_pos_remainder(bd, p->bounds[i][1] + 1 - p->bounds[i][0]);
+        // printf("truepos: %ld \n", truepos);
+        _coordinates[i] = (truepos + p->bounds[i][0]);
+        // printf("_cordinates: %ld \n", _coordinates[i]);
     }
 
-    printf("%s: coordinates is %ld, ptr is %f\n", __func__, _coordinates[0], *((double*)p->translate(p, _coordinates)));
+    // printf("%s: coordinates is %ld | %ld -> %ld\n", __func__, coordinates[0], p->coordinates[0], _coordinates[0]);
     return p->translate(p, _coordinates);
 }
 #undef _INF_SET_PTR_MIRROR

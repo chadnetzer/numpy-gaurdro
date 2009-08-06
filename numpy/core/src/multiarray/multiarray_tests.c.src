@@ -23,8 +23,22 @@ static int copy_@type@(PyArrayIterObject *itx, PyArrayNeighborhoodIterObject *ni
     /* For each point in itx, copy the current neighborhood into an array which
      * is appended at the output list */
     for(i = 0; i < itx->size; ++i) {
+        npy_intp coord[10];
         PyArrayNeighborhoodIter_Reset(niterx);
 
+#if 0
+        printf("+++++++++++++++++++++++++++++++\n");
+        coord[0] = -2;
+        printf("%f\n", *((double*)niterx->translate(niterx, coord)));
+        coord[0] = -1;
+        printf("%f\n", *((double*)niterx->translate(niterx, coord)));
+        coord[0] = 0;
+        printf("%f\n", *((double*)niterx->translate(niterx, coord)));
+        coord[0] = 1;
+        printf("%f\n", *((double*)niterx->translate(niterx, coord)));
+        coord[0] = 2;
+        printf("%f\n", *((double*)niterx->translate(niterx, coord)));
+#endif
         for(j = 0; j < itx->ao->nd; ++j) {
             odims[j] = bounds[2 * j + 1] - bounds[2 * j] + 1;
         }
@@ -299,9 +313,9 @@ neigh_iter_reset(PyArrayNeighborhoodIterObject *iter)
 	return 0;
 }
 
-#include "cycle.h"
+//#include "cycle.h"
 
-ticks T0, T1;
+//ticks T0, T1;
 double RES;
 double _MAX;
 
@@ -384,18 +398,19 @@ copy_double_double(PyArrayNeighborhoodIterObject *itx,
     //for(i = 0; i < 1; ++i) {
 		npy_intp yo[10];
 		yo[0] = i;
-		printf("(%f) \n", *((double*)itx->translate(itx, itx->coordinates)));
-		printf("(%f) \n", *((double*)itx->dataptr));
+        printf("====================\n");
+		printf("(%f) \n", *((double*)itx->translate(itx, yo)));
+		// printf("(%f) \n", *((double*)itx->dataptr));
 
         PyArrayNeighborhoodIter_Reset(niterx);
-        printf("===================\n");
-        T0 = getticks();
+        printf("------ begin --------------\n");
+        //T0 = getticks();
         for(j = 0; j < niterx->size; ++j) {
-			yo[0] = j;
-			printf("(%f) \n", *((double*)niterx->translate(niterx, yo)));
-			printf("(%f) \n", *((double*)niterx->dataptr));
+			printf("(%f) \n", *((double*)niterx->translate(niterx, niterx->coordinates)));
+			// printf("(%f) \n", *((double*)niterx->dataptr));
             PyArrayNeighborhoodIter_Next(niterx);
 		}
+        printf("------ end -------------\n");
 
 		// yo[0] = 1;
 		// printf("(%f) \n", *((double*)itx->translate(itx, yo)));

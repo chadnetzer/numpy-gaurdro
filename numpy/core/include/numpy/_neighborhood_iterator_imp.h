@@ -436,7 +436,6 @@ PyArrayNeighborhoodIter_Reset(PyArrayNeighborhoodIterObject* iter)
     for (i = 0; i < iter->nd; ++i) {
         iter->coordinates[i] = iter->bounds[i][0];
     }
-    printf("%s, coordinates is %d\n", __func__, iter->coordinates[0]);
     iter->dataptr = iter->translate((PyArrayIterObject*)iter, iter->coordinates);
 
 #if 0
