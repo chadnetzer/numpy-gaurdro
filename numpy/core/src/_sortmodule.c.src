@@ -1043,6 +1043,12 @@ static int
 
     return 0;
 }
+
+static int
+@TYPE@_apartialsort(@type@ *v, npy_intp* tosort, npy_intp num, npy_intp first, npy_intp last, void *NOT_USED)
+{
+    return 0;
+}
 /**end repeat**/
 
 static void
