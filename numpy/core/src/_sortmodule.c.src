@@ -979,6 +979,10 @@ add_sortfuncs(void)
         (PyArray_SortFunc *)@TYPE@_mergesort;
     descr->f->argsort[PyArray_MERGESORT] =
         (PyArray_ArgSortFunc *)@TYPE@_amergesort;
+    descr->f->partialsort =
+        (PyArray_PartialSortFunc *)@TYPE@_partialsort;
+    descr->f->argpartialsort =
+        (PyArray_ArgPartialSortFunc *)@TYPE@_apartialsort;
     /**end repeat**/
 
 }
