@@ -209,6 +209,12 @@ typedef Py_uintptr_t npy_uintp;
 #define constchar char
 #endif
 
+#if (PY_VERSION_HEX > 0x02050000)
+    #if NPY_SIZEOF_INTP != NPY_SIZEOF_PY_SSIZE_T
+	#error Configuration error: Py_ssize_t and npy_intp do not have the same size
+    #endif
+#endif
+
 #if NPY_SIZEOF_PY_INTPTR_T == NPY_SIZEOF_INT
         #define NPY_INTP NPY_INT
         #define NPY_UINTP NPY_UINT
