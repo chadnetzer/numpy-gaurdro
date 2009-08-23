@@ -203,6 +203,7 @@ def check_types(config_cmd, ext, build_dir):
     expected['double'] = [8]
     expected['long double'] = [8, 12, 16]
     expected['Py_intptr_t'] = [4, 8]
+    expected['Py_ssize_t'] = [4, 8]
     expected['PY_LONG_LONG'] = [8]
     expected['long long'] = [8]
 
@@ -237,6 +238,17 @@ def check_types(config_cmd, ext, build_dir):
             public_defines.append(('NPY_SIZEOF_%s' % sym2def(type), '%d' % res))
         else:
             raise SystemError("Checking sizeof (%s) failed !" % type)
+
+    for type in ('Py_ssize_t',):
+        res = config_cmd.check_type_size(type, headers=["Python.h"],
+                library_dirs=[pythonlib_dir()],
+                expected=expected[type])
+
+        if res >= 0:
+            private_defines.append(('SIZEOF_%s' % sym2def(type), '%d' % res))
+            public_defines.append(('NPY_SIZEOF_%s' % sym2def(type), '%d' % res))
+        else:
+            public_defines.append(('NPY_SIZEOF_%s' % sym2def(type), ''))
 
     # We check declaration AND type because that's how distutils does it.
     if config_cmd.check_decl('PY_LONG_LONG', headers=['Python.h']):

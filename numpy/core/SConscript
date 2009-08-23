@@ -92,6 +92,15 @@ else:
     numpyconfig_sym.append(('DEFINE_NPY_SIZEOF_LONGLONG', ''))
     numpyconfig_sym.append(('DEFINE_NPY_SIZEOF_PY_LONG_LONG', ''))
 
+if config.CheckType('Py_ssize_t', includes = '#include <Python.h>\n'):
+    st = config.CheckTypeSize('Py_ssize_t',
+                              includes = '#include <Python.h>\n')
+    assert not st == 0
+    numpyconfig_sym.append(('DEFINE_NPY_SIZEOF_PY_SSIZE_T',
+                            '#define NPY_SIZEOF_PY_SSIZE_T %d' % st))
+else:
+    numpyconfig_sym.append(('DEFINE_NPY_SIZEOF_PY_SSIZE_T', ''))
+
 if not config.CheckDeclaration('CHAR_BIT', includes= '#include <Python.h>\n'):
     raise RuntimeError(\
 """Config wo CHAR_BIT is not supported with scons: please contact the
