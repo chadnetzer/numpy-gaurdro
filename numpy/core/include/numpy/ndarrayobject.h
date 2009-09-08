@@ -360,8 +360,8 @@ typedef int (PyArray_FillFunc)(void *, npy_intp, void *);
 
 typedef int (PyArray_SortFunc)(void *, npy_intp, void *);
 typedef int (PyArray_ArgSortFunc)(void *, npy_intp *, npy_intp, void *);
-typedef int (PyArray_PartialSortFunc)(void *, npy_intp, npy_intp, npy_intp, void *);
-typedef int (PyArray_ArgPartialSortFunc)(void *, npy_intp *, npy_intp, npy_intp, npy_intp, void *);
+typedef int (PyArray_PartitionFunc)(void *, npy_intp, npy_intp, npy_intp, void *);
+typedef int (PyArray_ArgPartitionFunc)(void *, npy_intp *, npy_intp, npy_intp, npy_intp, void *);
 
 typedef int (PyArray_FillWithScalarFunc)(void *, npy_intp, void *, void *);
 
@@ -437,8 +437,10 @@ typedef struct {
         /* Sorting functions; Can be NULL*/
         PyArray_SortFunc *sort[NPY_NSORTS];
         PyArray_ArgSortFunc *argsort[NPY_NSORTS];
-        PyArray_PartialSortFunc *partialsort;
-        PyArray_ArgPartialSortFunc *argpartialsort;
+
+        /* Partitioning functions */
+        PyArray_PartitionFunc *partition;
+        PyArray_ArgPartitionFunc *argpartition;
 
         /* Dictionary of additional casting functions
            PyArray_VectorUnaryFuncs
