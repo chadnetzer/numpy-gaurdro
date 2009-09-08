@@ -1051,6 +1051,33 @@ static int
 }
 /**end repeat**/
 
+/*
+ *****************************************************************************
+ **                            STRING PARTITION                             **
+ *****************************************************************************
+ */
+
+
+/**begin repeat
+ *
+ * #TYPE = STRING, UNICODE#
+ * #type = char, PyArray_UCS4#
+ */
+
+static int
+@TYPE@_partition(@type@ *start, npy_intp num, npy_intp first, npy_intp last, PyArrayObject *arr)
+{
+    return 0;
+}
+
+
+static int
+@TYPE@_apartition(@type@ *v, npy_intp* tosort, npy_intp num, npy_intp first, npy_intp last, PyArrayObject *arr)
+{
+    return 0;
+}
+/**end repeat**/
+
 static void
 add_sortfuncs(void)
 {
