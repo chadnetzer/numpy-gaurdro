@@ -957,7 +957,7 @@ static int
 
 /*
  *****************************************************************************
- **                           NUMERIC PARTIALSORTS                          **
+ **                             NUMERIC PARTITION                           **
  *****************************************************************************
  */
 
@@ -974,7 +974,7 @@ static int
 
 
 static int
-@TYPE@_partialsort(@type@ *start, npy_intp num, npy_intp first, npy_intp last, void *NOT_USED)
+@TYPE@_partition(@type@ *start, npy_intp num, npy_intp first, npy_intp last, void *NOT_USED)
 {
     @type@ *pl = start;
     @type@ *pr = start + num - 1;
@@ -1045,7 +1045,7 @@ static int
 }
 
 static int
-@TYPE@_apartialsort(@type@ *v, npy_intp* tosort, npy_intp num, npy_intp first, npy_intp last, void *NOT_USED)
+@TYPE@_apartition(@type@ *v, npy_intp* tosort, npy_intp num, npy_intp first, npy_intp last, void *NOT_USED)
 {
     return 0;
 }
