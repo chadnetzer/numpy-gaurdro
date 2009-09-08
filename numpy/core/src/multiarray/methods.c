@@ -1102,6 +1102,67 @@ array_argsort(PyArrayObject *self, PyObject *args, PyObject *kwds)
 }
 
 static PyObject *
+array_partition(PyArrayObject *self, PyObject *args, PyObject *kwds)
+{
+    int nth;  /* Only partition around a single element for now */
+    int axis=-1;
+    int val;
+    PyObject *order = NULL;
+    PyArray_Descr *saved = NULL;
+    PyArray_Descr *newd;
+    static char *kwlist[] = {"axis", "order", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i|iO", kwlist, &nth, &axis,
+                                     &order)) {
+        return NULL;
+    }
+    if (order == Py_None) {
+        order = NULL;
+    }
+    if (order != NULL) {
+        PyObject *new_name;
+        PyObject *_numpy_internal;
+        saved = self->descr;
+        if (saved->names == NULL) {
+            PyErr_SetString(PyExc_ValueError, "Cannot specify " \
+                            "order when the array has no fields.");
+            return NULL;
+        }
+        _numpy_internal = PyImport_ImportModule("numpy.core._internal");
+        if (_numpy_internal == NULL) {
+            return NULL;
+        }
+        new_name = PyObject_CallMethod(_numpy_internal, "_newnames",
+                                       "OO", saved, order);
+        Py_DECREF(_numpy_internal);
+        if (new_name == NULL) {
+            return NULL;
+        }
+        newd = PyArray_DescrNew(saved);
+        newd->names = new_name;
+        self->descr = newd;
+    }
+
+    val = PyArray_Selection(self, nth, axis, which);
+    if (order != NULL) {
+        Py_XDECREF(self->descr);
+        self->descr = saved;
+    }
+    if (val < 0) {
+        return NULL;
+    }
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *
+array_argpartition(PyArrayObject *self, PyObject *args, PyObject *kwds)
+{
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyObject *
 array_searchsorted(PyArrayObject *self, PyObject *args, PyObject *kwds)
 {
     static char *kwlist[] = {"keys", "side", NULL};
