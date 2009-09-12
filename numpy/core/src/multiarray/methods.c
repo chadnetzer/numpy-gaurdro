@@ -1143,7 +1143,7 @@ array_partition(PyArrayObject *self, PyObject *args, PyObject *kwds)
         self->descr = newd;
     }
 
-    val = PyArray_Selection(self, nth, axis, which);
+    val = PyArray_Partition(self, nth, axis);
     if (order != NULL) {
         Py_XDECREF(self->descr);
         self->descr = saved;
@@ -2209,6 +2209,8 @@ NPY_NO_EXPORT PyMethodDef array_methods[] = {
          METH_VARARGS, NULL},
     {"nonzero", (PyCFunction)array_nonzero,
          METH_VARARGS, NULL},
+    {"partition", (PyCFunction)array_partition,
+         METH_VARARGS | METH_KEYWORDS, NULL},
     {"prod", (PyCFunction)array_prod,
          METH_VARARGS | METH_KEYWORDS, NULL},
     {"ptp", (PyCFunction)array_ptp,

@@ -897,6 +897,71 @@ _new_argsort(PyArrayObject *op, int axis, NPY_SORTKIND which)
     return NULL;
 }
 
+static int
+_new_partition(PyArrayObject *op, int nth, int axis)
+{
+    PyArrayIterObject *it;
+    int needcopy = 0, swap;
+    intp N, size;
+    int elsize;
+    intp astride;
+    PyArray_PartitionFunc *partition;
+    BEGIN_THREADS_DEF;
+
+    it = (PyArrayIterObject *)PyArray_IterAllButAxis((PyObject *)op, &axis);
+    swap = !PyArray_ISNOTSWAPPED(op);
+    if (it == NULL) {
+        return -1;
+    }
+
+    NPY_BEGIN_THREADS_DESCR(op->descr);
+    partition = op->descr->f->partition;
+    size = it->size;
+    N = op->dimensions[axis];
+    elsize = op->descr->elsize;
+    astride = op->strides[axis];
+
+    needcopy = !(op->flags & ALIGNED) || (astride != (intp) elsize) || swap;
+    if (needcopy) {
+        char *buffer = PyDataMem_NEW(N*elsize);
+
+        while (size--) {
+            _unaligned_strided_byte_copy(buffer, (intp) elsize, it->dataptr,
+                                         astride, N, elsize);
+            if (swap) {
+                _strided_byte_swap(buffer, (intp) elsize, N, elsize);
+            }
+            if (partition(buffer, nth, nth, N, op) < 0) {
+                PyDataMem_FREE(buffer);
+                goto fail;
+            }
+            if (swap) {
+                _strided_byte_swap(buffer, (intp) elsize, N, elsize);
+            }
+            _unaligned_strided_byte_copy(it->dataptr, astride, buffer,
+                                         (intp) elsize, N, elsize);
+            PyArray_ITER_NEXT(it);
+        }
+        PyDataMem_FREE(buffer);
+    }
+    else {
+        while (size--) {
+            if (partition(it->dataptr, nth, nth, N, op) < 0) {
+                goto fail;
+            }
+            PyArray_ITER_NEXT(it);
+        }
+    }
+    NPY_END_THREADS_DESCR(op->descr);
+    Py_DECREF(it);
+    return 0;
+
+ fail:
+    NPY_END_THREADS;
+    Py_DECREF(it);
+    return 0;
+}
+
 
 /* Be sure to save this global_compare when necessary */
 static PyArrayObject *global_obj;
@@ -1029,6 +1094,41 @@ PyArray_Sort(PyArrayObject *op, int axis, NPY_SORTKIND which)
     Py_XDECREF(ap);
     SWAPBACK2(op);
     return -1;
+}
+
+/*NUMPY_API
+ * Partition an array in-place
+ */
+NPY_NO_EXPORT int
+PyArray_Partition(PyArrayObject *op, int nth, int axis)
+{
+    int n;
+
+    n = op->nd;
+    if ((n == 0) || (PyArray_SIZE(op) == 1)) {
+        return 0;
+    }
+    if (axis < 0) {
+        axis += n;
+    }
+    if ((axis < 0) || (axis >= n)) {
+        PyErr_Format(PyExc_ValueError, "axis(=%d) out of bounds", axis);
+        return -1;
+    }
+    if (!PyArray_ISWRITEABLE(op)) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "attempted sort on unwriteable array.");
+        return -1;
+    }
+
+    /* Determine if we should use type-specific algorithm or not */
+    if (op->descr->f->partition == NULL) {
+        PyErr_SetString(PyExc_TypeError,
+                        "desired partition not supported for this type");
+        return -1;
+    }
+
+    return _new_partition(op, nth, axis);
 }
 
 
