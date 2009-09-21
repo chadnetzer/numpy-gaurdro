@@ -2205,6 +2205,29 @@ add_newdoc('numpy.core.multiarray', 'ndarray', ('nonzero',
     """))
 
 
+add_newdoc('numpy.core.multiarray', 'ndarray', ('partition',
+    """
+    a.sort(nth, axis=-1, order=None)
+
+    Partition an array, in-place.
+
+    Parameters
+    ----------
+    axis : int, optional
+        Axis along which to sort. Default is -1, which means sort along the
+        last axis.
+    order : list, optional
+        When `a` is an array with fields defined, this argument specifies
+        which fields to compare first, second, etc.  Not all fields need be
+        specified.
+
+    See Also
+    --------
+    numpy.sort : Return a sorted copy of an array.
+
+    """))
+
+
 add_newdoc('numpy.core.multiarray', 'ndarray', ('prod',
     """
     a.prod(axis=None, dtype=None, out=None)
