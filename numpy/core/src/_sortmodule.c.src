@@ -982,7 +982,7 @@ static int
     @type@ *plast = start + last;
     @type@ vp;
     @type@ *stack[PYA_QS_STACK], **sptr = stack, *pm, *pi, *pj, *pk;
-    int INSERTION_SORT_SIZE = 30;
+    int INSERTION_SORT_SIZE = 3;
 
     for (;;) {
         while ((pr - pl) > INSERTION_SORT_SIZE) {
