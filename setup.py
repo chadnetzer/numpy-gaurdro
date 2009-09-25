@@ -99,7 +99,7 @@ __builtin__.__NUMPY_SETUP__ = True
 
 FULLVERSION = VERSION
 if not ISRELEASED:
-    FULLVERSION += '.dev'
+    FULLVERSION += '.dev3'
     # If in git or something, bypass the svn rev
     if os.path.exists('.svn'):
         FULLVERSION += svn_version()
