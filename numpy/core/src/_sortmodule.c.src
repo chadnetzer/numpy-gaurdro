@@ -976,7 +976,6 @@ static int
 static int
 @TYPE@_partition(@type@ *start, npy_intp num, npy_intp first, npy_intp last, void *NOT_USED)
 {
-    printf("partition num %ld, first %ld, last %ld\n", (long)num, (long)first, (long)last);
     @type@ *pl = start;
     @type@ *pr = start + num - 1;
     @type@ *pfirst = start + first;

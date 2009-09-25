@@ -1102,7 +1102,6 @@ PyArray_Sort(PyArrayObject *op, int axis, NPY_SORTKIND which)
 NPY_NO_EXPORT int
 PyArray_Partition(PyArrayObject *op, int nth, int axis)
 {
-    printf("PyArray_Partition nth %ld, axis %ld\n", (long)nth, (long)axis);
     int n;
 
     n = op->nd;
