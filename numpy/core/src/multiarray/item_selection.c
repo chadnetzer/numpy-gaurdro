@@ -946,7 +946,7 @@ _new_partition(PyArrayObject *op, int nth, int axis)
     }
     else {
         while (size--) {
-            if (partition(it->dataptr, nth, nth, N, op) < 0) {
+            if (partition(it->dataptr, N, nth, nth, op) < 0) {
                 goto fail;
             }
             PyArray_ITER_NEXT(it);
