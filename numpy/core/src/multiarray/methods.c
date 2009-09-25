@@ -1104,7 +1104,6 @@ array_argsort(PyArrayObject *self, PyObject *args, PyObject *kwds)
 static PyObject *
 array_partition(PyArrayObject *self, PyObject *args, PyObject *kwds)
 {
-    printf("array_partition\n");
     int nth;  /* Only partition around a single element for now */
     int axis=-1;
     int val;
@@ -1144,7 +1143,6 @@ array_partition(PyArrayObject *self, PyObject *args, PyObject *kwds)
         self->descr = newd;
     }
 
-    printf("    PyArray_Partition nth %ld, axis %ld\n", (long)nth, (long)axis);
     val = PyArray_Partition(self, nth, axis);
     if (order != NULL) {
         Py_XDECREF(self->descr);
