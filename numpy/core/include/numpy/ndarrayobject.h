@@ -438,10 +438,6 @@ typedef struct {
         PyArray_SortFunc *sort[NPY_NSORTS];
         PyArray_ArgSortFunc *argsort[NPY_NSORTS];
 
-        /* Partitioning functions */
-        PyArray_PartitionFunc *partition;
-        PyArray_ArgPartitionFunc *argpartition;
-
         /* Dictionary of additional casting functions
            PyArray_VectorUnaryFuncs
            which can be populated to support casting
