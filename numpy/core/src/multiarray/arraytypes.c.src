@@ -3036,6 +3036,8 @@ static PyArray_ArrFuncs _Py@NAME@_ArrFuncs = {
     {
         NULL, NULL, NULL
     },
+    (PyArray_PartitionFunc*)NULL,
+    (PyArray_ArgPartitionFunc*)NULL,
     NULL,
     (PyArray_ScalarKindFunc*)NULL,
     NULL,
