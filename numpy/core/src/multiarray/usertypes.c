@@ -115,6 +115,8 @@ PyArray_InitArrFuncs(PyArray_ArrFuncs *f)
     f->scalarkind = NULL;
     f->cancastscalarkindto = NULL;
     f->cancastto = NULL;
+    f->partition = NULL;
+    f->argpartition = NULL;
 }
 
 /*
