@@ -111,12 +111,12 @@ PyArray_InitArrFuncs(PyArray_ArrFuncs *f)
         f->sort[i] = NULL;
         f->argsort[i] = NULL;
     }
-    f->partition = NULL;
-    f->argpartition = NULL;
     f->castdict = NULL;
     f->scalarkind = NULL;
     f->cancastscalarkindto = NULL;
     f->cancastto = NULL;
+    f->partition = NULL;
+    f->argpartition = NULL;
 }
 
 /*
