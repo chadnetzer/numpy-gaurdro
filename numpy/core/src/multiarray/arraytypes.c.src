@@ -3036,15 +3036,15 @@ static PyArray_ArrFuncs _Py@NAME@_ArrFuncs = {
     {
         NULL, NULL, NULL
     },
-    (PyArray_PartitionFunc*)NULL,
-    (PyArray_ArgPartitionFunc*)NULL,
     NULL,
     (PyArray_ScalarKindFunc*)NULL,
     NULL,
     NULL,
     (PyArray_FastClipFunc *)NULL,
     (PyArray_FastPutmaskFunc *)NULL,
-    (PyArray_FastTakeFunc *)NULL
+    (PyArray_FastTakeFunc *)NULL,
+    (PyArray_PartitionFunc*)NULL,
+    (PyArray_ArgPartitionFunc*)NULL
 };
 
 static PyArray_Descr @from@_Descr = {

@@ -438,10 +438,6 @@ typedef struct {
         PyArray_SortFunc *sort[NPY_NSORTS];
         PyArray_ArgSortFunc *argsort[NPY_NSORTS];
 
-        /* Partitioning functions */
-        PyArray_PartitionFunc *partition;
-        PyArray_ArgPartitionFunc *argpartition;
-
         /* Dictionary of additional casting functions
            PyArray_VectorUnaryFuncs
            which can be populated to support casting
@@ -458,6 +454,10 @@ typedef struct {
         PyArray_FastClipFunc *fastclip;
         PyArray_FastPutmaskFunc *fastputmask;
         PyArray_FastTakeFunc *fasttake;
+
+        /* Partitioning functions */
+        PyArray_PartitionFunc *partition;
+        PyArray_ArgPartitionFunc *argpartition;
 } PyArray_ArrFuncs;
 
 /* The item must be reference counted when it is inserted or extracted. */
